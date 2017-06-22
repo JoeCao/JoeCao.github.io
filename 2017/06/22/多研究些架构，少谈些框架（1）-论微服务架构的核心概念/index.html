@@ -6,14 +6,18 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="joecao.github.io">
-  <title>Archives: 2017/6 | 曹祖鹏的Blog</title>
+  <title>曹祖鹏的Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
+  <meta name="description" content="多研究些架构，少谈些框架（1） – 论微服务架构的核心概念2017-6-9 曹祖鹏 微服务架构和SOA区别微服务现在辣么火，业界流行的对比的却都是所谓的Monolithic单体应用，而大量的系统在十几年前都是已经是分布式系统了，那么微服务作为新的理念和原来的分布式系统，或者说SOA（面向服务架构）是什么区别呢？我们先看相同点：  需要Registry，实现动态的服务注册发现机制； 需要考虑分布式下">
+<meta property="og:type" content="article">
 <meta property="og:title" content="曹祖鹏的Blog">
-<meta property="og:url" content="joecao.github.io/archives/2017/06/index.html">
+<meta property="og:url" content="joecao.github.io/2017/06/22/多研究些架构，少谈些框架（1）-论微服务架构的核心概念/index.html">
 <meta property="og:site_name" content="曹祖鹏的Blog">
+<meta property="og:description" content="多研究些架构，少谈些框架（1） – 论微服务架构的核心概念2017-6-9 曹祖鹏 微服务架构和SOA区别微服务现在辣么火，业界流行的对比的却都是所谓的Monolithic单体应用，而大量的系统在十几年前都是已经是分布式系统了，那么微服务作为新的理念和原来的分布式系统，或者说SOA（面向服务架构）是什么区别呢？我们先看相同点：  需要Registry，实现动态的服务注册发现机制； 需要考虑分布式下">
+<meta property="og:updated_time" content="2017-06-22T07:05:15.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="曹祖鹏的Blog">
+<meta name="twitter:description" content="多研究些架构，少谈些框架（1） – 论微服务架构的核心概念2017-6-9 曹祖鹏 微服务架构和SOA区别微服务现在辣么火，业界流行的对比的却都是所谓的Monolithic单体应用，而大量的系统在十几年前都是已经是分布式系统了，那么微服务作为新的理念和原来的分布式系统，或者说SOA（面向服务架构）是什么区别呢？我们先看相同点：  需要Registry，实现动态的服务注册发现机制； 需要考虑分布式下">
   
     <link rel="alternative" href="/atom.xml" title="曹祖鹏的Blog" type="application/atom+xml">
   
@@ -149,91 +153,168 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-多研究些架构，少谈些框架（1）-论微服务架构的核心概念" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="多研究些架构，少谈些框架（1）-–-论微服务架构的核心概念"><a href="#多研究些架构，少谈些框架（1）-–-论微服务架构的核心概念" class="headerlink" title="多研究些架构，少谈些框架（1） – 论微服务架构的核心概念"></a>多研究些架构，少谈些框架（1） – 论微服务架构的核心概念</h2><p><em>2017-6-9 曹祖鹏</em></p>
+<h4 id="微服务架构和SOA区别"><a href="#微服务架构和SOA区别" class="headerlink" title="微服务架构和SOA区别"></a>微服务架构和SOA区别</h4><p>微服务现在辣么火，业界流行的对比的却都是所谓的Monolithic单体应用，而大量的系统在十几年前都是已经是分布式系统了，那么微服务作为新的理念和原来的分布式系统，或者说SOA（面向服务架构）是什么区别呢？<br>我们先看<strong>相同点</strong>：</p>
+<ul>
+<li>需要Registry，实现动态的服务注册发现机制；</li>
+<li>需要考虑分布式下面的事务一致性，CAP原则下，两段式提交不能保证性能，事务补偿机制需要考虑；</li>
+<li>同步调用还是异步消息传递，如何保证消息可靠性？SOA由ESB来集成所有的消息；</li>
+<li>都需要统一的Gateway来汇聚、编排接口，实现统一认证机制，对外提供APP使用的RESTful接口；</li>
+<li>同样的要关注如何再分布式下定位系统问题，如何做日志跟踪，就像我们电信领域做了十几年的信令跟踪的功能；</li>
+</ul>
+<p><strong>那么差别在哪？</strong></p>
+<ul>
+<li>是持续集成、持续部署？对于CI、CD（持续集成、持续部署），这本身和敏捷、DevOps是交织在一起的，我认为这更倾向于软件工程的领域而不是微服务技术本身；</li>
+<li>使用不同的通讯协议是不是区别？微服务的标杆通讯协议是RESTful，而传统的SOA一般是SOAP，不过目前来说采用轻量级的RPC框架Dubbo、Thrift、gRPC非常多，在Spring Cloud中也有Feign框架将标准RESTful转为代码的API这种仿RPC的行为，这些通讯协议不应该是区分微服务架构和SOA的核心差别；</li>
+<li>是流行的基于容器框架还是虚拟机为主？Docker和虚拟机还是物理机都是架构实现的一种方式，不是核心区别；</li>
+</ul>
+<p><strong>微服务架构的精髓在切分</strong></p>
+<ul>
+<li>服务的切分上有比较大的区别，SOA原本是以一种“集成”技术出现的，很多技术方案是将原有企业内部服务封装为一个独立进程，这样新的业务开发就可重用这些服务，这些服务很可能是类似供应链、CRM这样的非常大的颗粒；而微服务这个“微”，就说明了他在切分上有讲究，不妥协。无数的案例证明，如果你的切分是错误的，那么你得不到微服务承诺的“低耦合、升级不影响、可靠性高”之类的优势，而会比使用Monolithic有更多的麻烦。</li>
+<li><p><strong>不拆分存储的微服务是伪服务</strong>：在实践中，我们常常见到一种架构，后端存储是全部和在一个数据库中，仅仅把前端的业务逻辑拆分到不同的服务进程中，本质上和一个Monolithic一样，只是把模块之间的进程内调用改为进程间调用，这种切分不可取，违反了分布式第一原则，模块耦合没有解决，性能却受到了影响。</p>
+<blockquote>
+<p>分布式设计第一原则 – “不要分布你的对象”    </p>
+</blockquote>
+</li>
+<li><p>微服务的“Micro”这个词并不是越小越好，而是相对SOA那种粗粒度的服务，我们需要更小更合适的粒度，这种Micro不是无限制的小。</p>
+<blockquote>
+<p>如果我们将两路（同步）通信与小/微服务结合使用，并根据比如“1个类=1个服务”的原则，那么我们实际上回到了使用Corba、J2EE和分布式对象的20世纪90年代。遗憾的是，新生代的开发人员没有使用分布式对象的经验，因此也就没有认识到这个主意多么糟糕，他们正试图重复历史，只是这次使用了新技术，比如用HTTP取代了RMI或IIOP。    </p>
+</blockquote>
+</li>
+</ul>
+<h4 id="微服务和Domain-Driven-Design"><a href="#微服务和Domain-Driven-Design" class="headerlink" title="微服务和Domain Driven Design"></a>微服务和Domain Driven Design</h4><p>一个简单的图书管理系统肯定无需微服务架构。既然采用了微服务架构，那么面对的问题空间必然是比较宏大，比如整个电商、CRM。</p>
+<p><strong>如何拆解服务呢？</strong><br>使用什么样的方法拆解服务？业界流行1个类=1个服务、1个方法=1个服务、2 Pizza团队、2周能重写完成等方法，但是这些都缺乏实施基础。我们必须从一些软件设计方法中寻找，面向对象和设计模式适用的问题空间是一个模块，而函数式编程的理念更多的是在代码层面的微观上起作用。<br>Eric Evans 的《领域驱动设计》这本书对微服务架构有很大借鉴意义，这本书提出了一个能将一个大问题空间拆解分为领域和实体之间的关系和行为的技术。目前来说，这是一个最合理的解决拆分问题的方案，透过限界上下文（Bounded Context，下文简称为BC）这个概念，我们能将实现细节封装起来，让BC都能够实现SRP（单一职责）原则。而每个微服务正是BC在实际世界的物理映射，符合BC思路的微服务互相独立松耦合。</p>
+<blockquote>
+<p>微服务架构是一件好事，逼着大家关注设计软件的合理性，如果原来在Monolithic中领域分析、面向对象设计做不好，换微服务会把这个问题成倍的放大</p>
+</blockquote>
+<p><em>以电商中的订单和商品两个领域举例，按照DDD拆解，他们应该是两个独立的限界上下文，但是订单中肯定是包含商品的，如果贸然拆为两个BC，查询、调用关系就耦合在一起了，甚至有了麻烦的分布式事务的问题，这个关联如何拆解？BC理论认为在不同的BC中，即使是一个术语，他的关注点也不一样，在商品BC中，关注的是属性、规格、详情等等（实际上商品BC这个领域有价格、库存、促销等等，把他作为单独一个BC也是不合理的，这里为了简化例子，大家先认为商品BC就是商品基础信息）， 而在订单BC中更关注商品的库存、价格。所以在实际编码设计中，订单服务往往将关注的商品名称、价格等等属性冗余在订单中，这个设计解脱了和商品BC的强关联，两个BC可以独立提供服务，独立数据存储</em></p>
+<p><strong>小结</strong><br>微服务架构首先要关注的不是RPC/ServiceDiscovery/Circuit Breaker这些概念，也不是Eureka/Docker/SpringCloud/Zipkin这些技术框架，而是服务的边界、职责划分，划分错误就会陷入大量的服务间的相互调用和分布式事务中，这种情况微服务带来的不是便利而是麻烦。<br>DDD给我们带来了合理的划分手段，但是DDD的概念众多，晦涩难以理解，如何抓住重点，合理的运用到微服务架构中呢？<br>我认为如下的几个架构思想是重中之重</p>
+<ul>
+<li><p>充血模型</p>
+</li>
+<li><p>事件驱动    </p>
+<p>​</p>
+<p>下面两篇将为大家详细介绍这两个设计思路</p>
+</li>
+</ul>
+<h4 id="版权说明"><a href="#版权说明" class="headerlink" title="版权说明"></a>版权说明</h4><p>本文采用 CC BY 3.0 CN协议 进行许可。 可自由转载、引用，但需署名作者且注明文章出处</p>
+
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
       
       
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2017" class="archive-year">2017</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2017/06/22/多研究些架构，少谈些框架（1）-论微服务架构的核心概念/" class="archive-article-date">
-  	<time datetime="2017-06-22T07:04:33.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-06-22</time>
-</a>
-        </div>
-    	 
-        <div class="article-info info-on-right">
-          
-          
+      
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="http://s.jiathis.com/qrcode.php?url=http:joecao.github.io/2017/06/22/多研究些架构，少谈些框架（1）-论微服务架构的核心概念/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2017/06/22/微服务之构建容错和自动降级的系统/" class="archive-article-date">
-  	<time datetime="2017-06-22T06:50:17.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-06-22</time>
-</a>
-        </div>
-    	 
-        <div class="article-info info-on-right">
-          
-          
 
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2017/06/22/hello-world/" class="archive-article-date">
-  	<time datetime="2017-06-22T06:43:38.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-06-22</time>
-</a>
-        </div>
-    	 
+<nav id="article-nav">
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/06/22/hello-world/">Hello World</a>
-    </h1>
+  
+    <a href="/2017/06/22/微服务之构建容错和自动降级的系统/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title"></div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+
+
+
+  
+  
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
   
 
-    
+  
 
 
           </div>
@@ -256,8 +337,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
