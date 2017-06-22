@@ -6,18 +6,31 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="joecao.github.io">
-  <title>Hello World | 曹祖鹏的Blog</title>
+  <title>微服务之构建容错&amp;自动降级的系统 | 曹祖鹏的Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub. Quick">
+  <meta name="description" content="微服务是什么MicroService主要是针对以前的Monolithic（单体）服务来说的，类似优步打车（Uber）这样的应用，如果使用Monolithic来架构，可能是这样的      注：STRIPE是支付服务SENDGRID是邮件推送服务TWILIO是语音、消息的云服务  大部分的项目都是由Monolithic起步的。刚开始最合适不过了，开发简单直接（直接在一个IDE里面就可以调试）、部署方">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Hello World">
-<meta property="og:url" content="joecao.github.io/2017/06/22/hello-world/index.html">
+<meta property="og:title" content="微服务之构建容错&amp;自动降级的系统">
+<meta property="og:url" content="joecao.github.io/2017/06/09/微服务之构建容错和自动降级的系统/index.html">
 <meta property="og:site_name" content="曹祖鹏的Blog">
-<meta property="og:description" content="Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub. Quick">
-<meta property="og:updated_time" content="2017-06-22T06:43:38.000Z">
+<meta property="og:description" content="微服务是什么MicroService主要是针对以前的Monolithic（单体）服务来说的，类似优步打车（Uber）这样的应用，如果使用Monolithic来架构，可能是这样的      注：STRIPE是支付服务SENDGRID是邮件推送服务TWILIO是语音、消息的云服务  大部分的项目都是由Monolithic起步的。刚开始最合适不过了，开发简单直接（直接在一个IDE里面就可以调试）、部署方">
+<meta property="og:image" content="https://user-images.githubusercontent.com/3287183/27023280-756b952c-4f84-11e7-8c76-248145788f7e.png">
+<meta property="og:image" content="https://user-images.githubusercontent.com/3287183/27023297-84c009ea-4f84-11e7-95a9-23db2ad1f61f.png">
+<meta property="og:image" content="https://user-images.githubusercontent.com/3287183/27023307-9195178c-4f84-11e7-9c53-4bdaaf7bf892.png">
+<meta property="og:image" content="https://user-images.githubusercontent.com/3287183/27023317-9eb3cb48-4f84-11e7-9439-fd4db39c77ba.png">
+<meta property="og:image" content="https://user-images.githubusercontent.com/3287183/27023336-b223546e-4f84-11e7-81c4-b882594e8949.png">
+<meta property="og:image" content="https://user-images.githubusercontent.com/3287183/27023362-c1b2b596-4f84-11e7-8d12-fdad9a1d0e5b.png">
+<meta property="og:image" content="https://user-images.githubusercontent.com/3287183/27023371-cd10eea8-4f84-11e7-9dc5-b8b4aaa81a19.png">
+<meta property="og:image" content="https://user-images.githubusercontent.com/3287183/27023376-d51bafde-4f84-11e7-91d9-ed4e00a7763c.png">
+<meta property="og:image" content="https://user-images.githubusercontent.com/3287183/27023388-e59d2b12-4f84-11e7-8735-d599a10e10cf.png">
+<meta property="og:image" content="https://user-images.githubusercontent.com/3287183/27023399-eec4495a-4f84-11e7-99c0-f8a25d35c400.png">
+<meta property="og:image" content="https://user-images.githubusercontent.com/3287183/27023433-19fae0c0-4f85-11e7-8ea3-cd5669fdada7.png">
+<meta property="og:image" content="https://user-images.githubusercontent.com/3287183/27023442-2205624a-4f85-11e7-8a3b-6d54fe7db3ba.png">
+<meta property="og:updated_time" content="2017-06-22T10:58:31.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Hello World">
-<meta name="twitter:description" content="Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub. Quick">
+<meta name="twitter:title" content="微服务之构建容错&amp;自动降级的系统">
+<meta name="twitter:description" content="微服务是什么MicroService主要是针对以前的Monolithic（单体）服务来说的，类似优步打车（Uber）这样的应用，如果使用Monolithic来架构，可能是这样的      注：STRIPE是支付服务SENDGRID是邮件推送服务TWILIO是语音、消息的云服务  大部分的项目都是由Monolithic起步的。刚开始最合适不过了，开发简单直接（直接在一个IDE里面就可以调试）、部署方">
+<meta name="twitter:image" content="https://user-images.githubusercontent.com/3287183/27023280-756b952c-4f84-11e7-8c76-248145788f7e.png">
   
     <link rel="alternative" href="/atom.xml" title="曹祖鹏的Blog" type="application/atom+xml">
   
@@ -59,8 +72,6 @@
 				<li><a href="/">主页</a></li>
 	        
 				<li><a href="/archives">所有文章</a></li>
-	        
-				<li><a href="/tags/随笔/">随笔</a></li>
 	        
 			</ul>
 		</nav>
@@ -116,8 +127,6 @@
 			
 				
 			
-				
-			
 			
 			
 			<nav class="header-nav">
@@ -133,14 +142,12 @@
 			</nav>
 
 			<nav class="header-menu js-header-menu">
-				<ul style="width: 70%">
+				<ul style="width: 50%">
 				
 				
-					<li style="width: 33.333333333333336%"><a href="/">主页</a></li>
+					<li style="width: 50%"><a href="/">主页</a></li>
 		        
-					<li style="width: 33.333333333333336%"><a href="/archives">所有文章</a></li>
-		        
-					<li style="width: 33.333333333333336%"><a href="/tags/随笔/">随笔</a></li>
+					<li style="width: 50%"><a href="/archives">所有文章</a></li>
 		        
 				</ul>
 			</nav>
@@ -155,35 +162,171 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-hello-world" class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-微服务之构建容错和自动降级的系统" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      Hello World
+      微服务之构建容错&amp;自动降级的系统
     </h1>
   
 
         
-        <a href="/2017/06/22/hello-world/" class="archive-article-date">
-  	<time datetime="2017-06-22T06:43:38.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-06-22</time>
+        <a href="/2017/06/09/微服务之构建容错和自动降级的系统/" class="archive-article-date">
+  	<time datetime="2017-06-09T12:46:25.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-06-09</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="external">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="external">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="external">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="external">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo new <span class="string">"My New Post"</span></div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="external">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo server</div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="external">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo generate</div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="external">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo deploy</div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="external">Deployment</a></p>
+        <h3 id="微服务是什么"><a href="#微服务是什么" class="headerlink" title="微服务是什么"></a>微服务是什么</h3><p>MicroService主要是针对以前的Monolithic（单体）服务来说的，类似优步打车（Uber）这样的应用，如果使用Monolithic来架构，可能是这样的   </p>
+<p><img src="https://user-images.githubusercontent.com/3287183/27023280-756b952c-4f84-11e7-8c76-248145788f7e.png" alt="graph-01-e1431978090737"></p>
+<blockquote>
+<p>注：<br>STRIPE是支付服务<br>SENDGRID是邮件推送服务<br>TWILIO是语音、消息的云服务</p>
+</blockquote>
+<p>大部分的项目都是由Monolithic起步的。刚开始最合适不过了，开发简单直接（直接在一个IDE里面就可以调试）、部署方便（搞个war包扔到tomcat里面就能跑）。<br>但是随着时间的增长，单体应用的缺陷暴露出来了。</p>
+<ul>
+<li>首先是代码量大大增加<br>从几千行到几十万行，接手的程序员已经无法搞清楚里面模块交互逻辑和依赖关系了。大家都在小心翼翼的加代码，避免触碰以前的旧代码。至于单元测试，这种怪兽级别的应用，能不能拆分出来单元啊？</li>
+<li>不可避免的超长启动时间<br>3分钟以内的都算是快的。启动后，程序员抽支烟再回来的不在少数。大量的时间在等待，使得程序员越来越不愿意测试自己的功能，写完了之后直接扔给测试就完事了。测试轮次一次又一次，时间不可避免的浪费。<ul>
+<li>部署扩展困难<br>各个模块对服务器的性能要求不同，有的占用CPU高，有的需要大量的IO，有的需要更多的内存。部署在一个服务器内相互影响，扩容的话，无法针对性的扩展。</li>
+</ul>
+</li>
+<li>单个的bug会损坏整个服务<br>可能一个模块的内存泄露，会使得整个服务都crash down。</li>
+<li>对于一些新技术尝试有限制<br>比如想换个新框架试试，但是要换就全部得换，风险太大。</li>
+</ul>
+<h3 id="服务化的改造"><a href="#服务化的改造" class="headerlink" title="服务化的改造"></a>服务化的改造</h3><p>解决方案就是服务化，进行下图的Y轴方向的功能拆解。  </p>
+<p><img src="https://user-images.githubusercontent.com/3287183/27023297-84c009ea-4f84-11e7-95a9-23db2ad1f61f.png" alt="xyz"></p>
+<p>最终可能的情况类似下图  </p>
+<p><img src="https://user-images.githubusercontent.com/3287183/27023307-9195178c-4f84-11e7-9c53-4bdaaf7bf892.png" alt="graph-031-e1431992337817"></p>
+<h3 id="MicroService不是银弹"><a href="#MicroService不是银弹" class="headerlink" title="MicroService不是银弹"></a>MicroService不是银弹</h3><ul>
+<li>服务之间的通讯机制RPC开销大</li>
+<li>需要考虑分布式情况下的服务失效恢复等等问题</li>
+<li>数据库分布带来的分布式事务困扰，还有分布式数据结果Join的问题</li>
+<li>如何管理这么多服务之间的依赖关系，出了问题如何定位？</li>
+<li>部署服务变得复杂。包括配置、部署、扩容、监控，都是需要专门的工具链支持。</li>
+</ul>
+<h3 id="微服务和SOA"><a href="#微服务和SOA" class="headerlink" title="微服务和SOA"></a>微服务和SOA</h3><p>虽然微服务很火，但是仅仅把微服务和Monolithic服务做对比，然后搞个大新闻把Monolithic批判一番，我认为是很不公平的。<br>一般稍具规模企业都在前几年完成了SOA的演化，那么微服务和SOA的区别？SOA在十年前就提出了服务化的概念，那微服务到底是新的理论突破，还是新瓶装旧酒换了一个概念出来忽悠？<br>总结了微服务应该具备的特点：</p>
+<ul>
+<li>小, 且专注于做⼀件事情</li>
+<li>独立的进程</li>
+<li>松耦合、独立部署</li>
+<li>轻量级的通信机制</li>
+<li>有边界：<br>服务间边界清晰、灵活选择语言和技术（这个是有争议的）</li>
+<li>松耦合：<br>服务无状态、容错性、故障隔离、自动恢复、弹性伸缩、服务间独立部署，发布、升级、降级互不影响</li>
+<li>面向服务架构(SOA) ：<br>服务化、服务分层</li>
+</ul>
+<p>我个人理解SOA和MicroService理论是同源，但是实施方案上面有轻量和重量解决方案的区别，类似当年EJB和Spring之争。<br>基于ESB、SOAP、WSDL等重型解决方案，演化出来SOA。<br> 利用Dubbo、zookeeper、http/rest、consul、Eureka这些框架的轻量解决方案，也就是现在流行的MicroService。</p>
+<h3 id="微服务之后，前端（Web、App）怎么开发？"><a href="#微服务之后，前端（Web、App）怎么开发？" class="headerlink" title="微服务之后，前端（Web、App）怎么开发？"></a>微服务之后，前端（Web、App）怎么开发？</h3><p>以电商APP为例，需要购物车、物流服务、库存服务、推荐服务、订单服务、评价服务、商品类目服务….  </p>
+<p><img src="https://user-images.githubusercontent.com/3287183/27023317-9eb3cb48-4f84-11e7-9439-fd4db39c77ba.png" alt="graph-08"></p>
+<p>如果我们让APP分别去调用这些服务会带来什么后果？</p>
+<ul>
+<li>后端代码必须改造，因为APP调不了Dubbo协议（二进制的比较复杂），我们得给每个服务都架设一个HTTP代理，也无法利用MicroService的服务发现机制（暴露Zookeeper到公网，非常不安全），必须通过额外的nginx做负载均衡</li>
+<li>客户端的代码极其冗余，因为业务数据是需要融合的，很多页面需要发送多次请求才能返回给用户一个完成的View，再加上UI 的Callback hell，特别酸爽</li>
+<li>将内部的逻辑放到了客户端，一旦服务有拆分、融合之类的操作，APP也必须升级<h3 id="适配移动化的BFF架构"><a href="#适配移动化的BFF架构" class="headerlink" title="适配移动化的BFF架构"></a>适配移动化的BFF架构</h3>在微服务和APP之间建立一个沟通的桥梁，一个网关（Gateway），我们称之为<strong>Backend for Fronter</strong>，一个专为前端准备的后端（绕口令中）<br><img src="https://user-images.githubusercontent.com/3287183/27023336-b223546e-4f84-11e7-81c4-b882594e8949.png" alt="graph-09"><br>BFF职责是路由、聚合、协议转换。<br>每个请求BFF都可能会调用后面多个微服务的Dubbo接口，将结果聚合后返回给前台。BFF需要给前端更粗颗粒的接口，避免APP的多次调用降低效率。比如/products/{productId}这样的接口会将商品标题、规格、图片、详情页面、评价一股脑的返回给前台。<h3 id="优缺点"><a href="#优缺点" class="headerlink" title="优缺点"></a>优缺点</h3>优点：提供了一站式的接口，隐藏内部逻辑，对前端开发友好<br>缺点：对高可用的架构来说，这个单点的职责较重。</li>
+</ul>
+<h3 id="微服务后，中心应该如何开发？"><a href="#微服务后，中心应该如何开发？" class="headerlink" title="微服务后，中心应该如何开发？"></a>微服务后，中心应该如何开发？</h3><p>以商品中心为例：一个大的商品中心服务可以被拆为类目、商品、价格、库存四个微服务。这样每个服务的职责专注，接口单一。每个服务可以有自己的存储，甚至可以用不同的存储，比如商品适合Elasticsearch的搜索引擎，库存就适合Redis这样的内存数据库。这样系统的性能提升。<br>问题又出现了，服务拆开，本来一个接口能返回的数据，必须通过分别调用不同服务的接口来完成。更糟糕的是，不同的服务使用不同的存储引擎，以前一个sql join能解决的事情，变得非常的复杂。<br>如何解决？</p>
+<ul>
+<li>得益于现在技术的提升，我们可以在BFF侧使用zip、join这类的函数式写法替代原来的多层循环来更高效聚合数据。</li>
+<li>可以使用最新的思路在客户端缓存数据，相当于在app、js侧做了一个数据拷贝的子集（mongodb？），通过diff之类的算法和后端不断同步数据。（类似firebase，野狗的思路）</li>
+<li>使用类似物化视图的概念，在业务侧生成他需要的视图数据。加快查询速度。<br><img src="https://user-images.githubusercontent.com/3287183/27023362-c1b2b596-4f84-11e7-8d12-fdad9a1d0e5b.png" alt="1461741321743"><br>以上方案视情况采用</li>
+</ul>
+<h3 id="Backend-for-Fronter和SOA配合的烦恼"><a href="#Backend-for-Fronter和SOA配合的烦恼" class="headerlink" title="Backend for Fronter和SOA配合的烦恼"></a>Backend for Fronter和SOA配合的烦恼</h3><p>一旦涉及到调用多个后台SOA的接口，SOA接口之间有一定关联关系，需要将结果组合，这组调用的危险性就很大。<br>以我们常见的商品列表的接口举例，该接口不仅仅是调用了商品中心商品信息接口，还调用了定价服务的用户级别价格接口，然后组合（zip）成为一个商品完整信息返回。<br>在某些情况下价格服务失效，或者是返回时长波动，那么整个商品列表就一直会阻塞，直到超时也不会返回结果，用户在前台看到的是一个<strong><em>空白的转圈的页面</em></strong>。 用户只会认为整个系统都挂了，他可不管你里面发生了什么。<br>微服务架构成规模后，任何一个我们认为的微不足道的服务的故障，都会导致整个业务的不可用。而在SOA模式下面数千个服务，可能有一定的几率某几个服务是失效的，这种minor的失效导致整个系统不可用的失败，是SOA的一大硬伤。  </p>
+<p><img src="https://user-images.githubusercontent.com/3287183/27023371-cd10eea8-4f84-11e7-9dc5-b8b4aaa81a19.png" alt="richardson-microservices-part3-threads-blocked-1024x383"></p>
+<p>在后端服务失效这种情况下，我们希望API网关能做到</p>
+<ul>
+<li>快速响应用户的请求</li>
+<li>给用户一些详尽的错误提示，安抚客户</li>
+<li>如果有可能，降级到某个缓存或者备用服务上</li>
+<li>快速的跟踪到错误位置</li>
+<li>防止失效扩散到整个集群</li>
+<li>如果服务正常了，前端API网关能够自动恢复<br><img src="https://user-images.githubusercontent.com/3287183/27023376-d51bafde-4f84-11e7-91d9-ed4e00a7763c.png" alt="hystrixfallback"></li>
+</ul>
+<h3 id="Hystrix-是什么？"><a href="#Hystrix-是什么？" class="headerlink" title="Hystrix 是什么？"></a>Hystrix 是什么？</h3><p>Hystrix是Netflix开发的一个库，能够实现</p>
+<blockquote>
+<ul>
+<li>调用外部API能够设置超时时间(默认1000ms)</li>
+<li>限制外部系统的并发调用(默认10个)</li>
+<li>Circuit Breaker可以在一定错误率后不再调用API（默认50%）</li>
+<li>Circuit Breaker启动后，每隔五秒可以再次尝试调用API</li>
+<li>可以监控实时的调用情况，Hystrix甚至提供了一个可视化的监控面板</li>
+</ul>
+</blockquote>
+<h3 id="Hystrix适用场景"><a href="#Hystrix适用场景" class="headerlink" title="Hystrix适用场景"></a>Hystrix适用场景</h3><p>Hystrix用在BFF侧，包装外部系统API的调用是最合适的。当然不仅仅是外部系统API调用，即使是内部进程内的调用，也可以用Hystrix的Semaphore模式进行并发限制和监控<br>Hystrix提供了贴心的Fallback（回落、降级，怎么称呼好呢？）功能，在我们设置的条件满足后，就会转到Fallback方法上，替代原来的接口的返回。<br>有两个场景，不适合Hystrix的Fallback：</p>
+<ul>
+<li>如果接口是write操作<br>– 这里的write包括append，update、delete等等操作，这些操作会改变外部系统状态，使用Hystrix是不合适的。因为Hystrix只是在客户端做了限制和监控，Hystrix判定的超时，和外部系统判定的标准并不同步，这就会导致数据不一致。</li>
+<li>批量操作或者是离线操作<br>– 如果是导出一个订单列表或者统计一个报表之类的操作，就不要Fallback了，让他异步执行吧，没有必要降级。</li>
+</ul>
+<h3 id="CircuitBreaker模式"><a href="#CircuitBreaker模式" class="headerlink" title="CircuitBreaker模式"></a>CircuitBreaker模式</h3><p>Martin Flower 曾经总结了一个CircuitBreaker的模式，就是在服务故障的情况下，迅速做出反应，不让故障扩散  </p>
+<p><img src="https://user-images.githubusercontent.com/3287183/27023388-e59d2b12-4f84-11e7-8735-d599a10e10cf.png" alt="circuit-breaker">    </p>
+<p>在图中看到，在可能出现超时的调用中，保护性的调用启动了两个线程，一个线程去实际调用，一个线程监控，如果超过设定的阈值，监控线程会返回一个默认值或者直接抛出异常给客户端，就不等那个真正的远调用线程的返回了<br>当然这种对超时的控制，一般的RPC都会有（比如Dubbo做了mock的功能）。但是CircuitBreaker的高效之处在于过了一段时间后，可以检测接口的状况，如果接口正常了，自动恢复。<br>在这里Martin Flower设计了一个“half open”半开的状态  </p>
+<p><img src="https://user-images.githubusercontent.com/3287183/27023399-eec4495a-4f84-11e7-99c0-f8a25d35c400.png" alt="open-state"></p>
+<p>从图上可以看到，在客户端调用次数到了一定的阈值的时候，CircuitBreaker进入了Open状态，在Open状态启动定时器，到了时间会转入Half Open，再次尝试一下接口调用，如果正常了，就恢复。如果还是错误，那就回到Open状态，继续等着吧。</p>
+<h3 id="如何集成到我们的SpringBoot的框架"><a href="#如何集成到我们的SpringBoot的框架" class="headerlink" title="如何集成到我们的SpringBoot的框架"></a>如何集成到我们的SpringBoot的框架</h3><p>很简单，就是几个Jar包的引入和annotation的使用<br>请参考例子<br><a href="http://git.dev.qianmi.com/commons/micro-service-frontend-sample.git" target="_blank" rel="external">http://git.dev.qianmi.com/commons/micro-service-frontend-sample.git</a></p>
+<pre><code>@Service
+public class PricingApi implements PricingProvider {
+    @Reference(timeout = 15000, check = false)
+    PricingProvider pricingProvider;
+
+    /**
+     * 默认在500毫秒内就需要返回结果，否则回落到default的值中
+     *
+     * @param itemids
+     * @return
+     */
+    @Override
+    @HystrixCommand(fallbackMethod = &quot;defaultPrice&quot;, commandProperties = {
+            @HystrixProperty(name = &quot;execution.isolation.thread.timeoutInMilliseconds&quot;, value = &quot;500&quot;),
+            @HystrixProperty(name = &quot;circuitBreaker.requestVolumeThreshold&quot;, value = &quot;10&quot;)})
+    public List&lt;ItemPrice&gt; getPrice(String... itemids) {
+        return pricingProvider.getPrice(itemids);
+    }
+
+    /**如果回落到此方法，使用-1代替价格返回**/
+    public List&lt;ItemPrice&gt; defaultPrice(String... itemids) {
+        List&lt;ItemPrice&gt; prices = new ArrayList&lt;&gt;();
+        for (String itemId : itemids) {
+            ItemPrice itemPrice = new ItemPrice(itemId, -1.0);
+            prices.add(itemPrice);
+        }
+        return prices;
+    }
+}
+</code></pre><p>只需要通过注解的方式将Dubbo的远程调用包住即可<br>如果没用Spring boot框架，可以参考这篇文章<br><a href="https://ahus1.github.io/hystrix-examples/manual.html" target="_blank" rel="external">https://ahus1.github.io/hystrix-examples/manual.html</a></p>
+<h3 id="最佳实践"><a href="#最佳实践" class="headerlink" title="最佳实践"></a>最佳实践</h3><h4 id="几个重要的参数说明"><a href="#几个重要的参数说明" class="headerlink" title="几个重要的参数说明"></a>几个重要的参数说明</h4><ul>
+<li><p>execution.isolation.thread.timeoutInMilliseconds<br>这个用于设置超时时间，默认是1000ms</p>
+</li>
+<li><p>execution.isolation.strategy<br>这里有两个选择，一个是thread 一个semaphore，thread会启动线程池，默认为10个，主要用于控制外部系统的API调用。semaphore是控制内部的API调用，本机调用（顺便说一下其实Hystrix不仅仅用于RPC场景）<br><img src="https://user-images.githubusercontent.com/3287183/27023433-19fae0c0-4f85-11e7-8ea3-cd5669fdada7.png" alt="isolation-options-640"></p>
+</li>
+<li><p>circuitBreaker.requestVolumeThreshold<br>这个参数决定了，有规定时间内（一般是10s），有多少个错误请求，会触发circuit breaker open。默认20个</p>
+</li>
+<li>circuitBreaker.sleepWindowInMilliseconds<br>该参数决定了，在circuit break 进入到open状态后，多少时间会再次尝试进入  <h4 id="如何设置线程池的大小"><a href="#如何设置线程池的大小" class="headerlink" title="如何设置线程池的大小"></a>如何设置线程池的大小</h4></li>
+</ul>
+<p><img src="https://user-images.githubusercontent.com/3287183/27023442-2205624a-4f85-11e7-8a3b-6d54fe7db3ba.png" alt="thread-configuration-640"></p>
+<p>打个比方，经过统计，一个远程接口的返回时间<br><code><br>Median: 40ms<br>99th: 200ms<br>99.5th: 300ms<br></code></p>
+<ul>
+<li><p>线程池的计算公式<br>requests per second at peak when healthy × 99th percentile latency in seconds + some breathing room<br>99%的请求都会在200ms内返回，一个高峰期并发30个每秒<br>那么thread pool size = 30 rps * 0.2 seconds = 6 + breathing room(冗余量) =10 threads<br>99%的请求都会在200ms之内返回，考虑到在失败时，设置一次retry，那么大概就是240ms左右，这样的话设置执行线程的超时时间为300ms。<br>如果设置得当，一般来说，线程池的Active Thread只会有1-2个，大部分的40ms内的请求会很快的处理掉。</p>
+</li>
+<li><p>Thread pool设置</p>
+<pre><code>@HystrixCommand(commandProperties = {
+        @HystrixProperty(name = &quot;execution.isolation.thread.timeoutInMilliseconds&quot;, value = &quot;500&quot;)
+    },
+            threadPoolProperties = {
+                    @HystrixProperty(name = &quot;coreSize&quot;, value = &quot;30&quot;),
+                    @HystrixProperty(name = &quot;maxQueueSize&quot;, value = &quot;101&quot;),
+                    @HystrixProperty(name = &quot;keepAliveTimeMinutes&quot;, value = &quot;2&quot;),
+                    @HystrixProperty(name = &quot;queueSizeRejectionThreshold&quot;, value = &quot;15&quot;),
+                    @HystrixProperty(name = &quot;metrics.rollingStats.numBuckets&quot;, value = &quot;12&quot;),
+                    @HystrixProperty(name = &quot;metrics.rollingStats.timeInMilliseconds&quot;, value = &quot;1440&quot;)
+    })
+public User getUserById(String id) {
+    return userResource.getUserById(id);
+}
+</code></pre></li>
+</ul>
+<h4 id="版权说明"><a href="#版权说明" class="headerlink" title="版权说明"></a>版权说明</h4><p>本文采用 CC BY 3.0 CN协议 进行许可。 可自由转载、引用，但需署名作者且注明文章出处</p>
 
       
 
@@ -263,7 +406,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="http://s.jiathis.com/qrcode.php?url=http:joecao.github.io/2017/06/22/hello-world/" alt="微信分享二维码">
+      <img src="http://s.jiathis.com/qrcode.php?url=http:joecao.github.io/2017/06/09/微服务之构建容错和自动降级的系统/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -277,15 +420,20 @@
   
 <nav id="article-nav">
   
-    <a href="/2017/06/22/微服务之构建容错和自动降级的系统/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2017/06/12/多研究些架构，少谈些框架（2）-微服务和充血模型/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
-          (no title)
+          多研究些架构，少谈些框架（2）-- 微服务和充血模型
         
       </div>
     </a>
   
+  
+    <a href="/2017/06/09/多研究些架构，少谈些框架（1）-论微服务架构的核心概念/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">多研究些架构，少谈些框架（1） -- 论微服务架构的核心概念</div>
+      <i class="icon-circle-right"></i>
+    </a>
   
 </nav>
 
@@ -470,7 +618,7 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
     
     	<section class="tools-section tools-section-me" q-show="aboutme">
   	  	
-  	  		<div class="aboutme-wrap" id="js-aboutme">很惭愧&lt;br&gt;&lt;br&gt;只做了一点微小的工作&lt;br&gt;谢谢大家</div>
+  	  		<div class="aboutme-wrap" id="js-aboutme">70后“老”程序员，&lt;br&gt; 涉猎过企业级、电信应用开发和互联网开发等多个领域。&lt;br&gt;&lt;br&gt;非计算机专业出身但热爱技术，&lt;br&gt;擅长的技术包括：Java、Python、DDD 等等，&lt;br&gt;目前关注点是对领域驱动设计和微服务架构。&lt;br&gt;</div>
   	  	
     	</section>
     

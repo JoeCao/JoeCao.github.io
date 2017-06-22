@@ -6,18 +6,18 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="joecao.github.io">
-  <title>曹祖鹏的Blog</title>
+  <title>多研究些架构，少谈些框架（1） -- 论微服务架构的核心概念 | 曹祖鹏的Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="多研究些架构，少谈些框架（1） – 论微服务架构的核心概念2017-6-9 曹祖鹏 微服务架构和SOA区别微服务现在辣么火，业界流行的对比的却都是所谓的Monolithic单体应用，而大量的系统在十几年前都是已经是分布式系统了，那么微服务作为新的理念和原来的分布式系统，或者说SOA（面向服务架构）是什么区别呢？我们先看相同点：  需要Registry，实现动态的服务注册发现机制； 需要考虑分布式下">
+  <meta name="description" content="2017-6-9 曹祖鹏 微服务架构和SOA区别微服务现在辣么火，业界流行的对比的却都是所谓的Monolithic单体应用，而大量的系统在十几年前都是已经是分布式系统了，那么微服务作为新的理念和原来的分布式系统，或者说SOA（面向服务架构）是什么区别呢？我们先看相同点：  需要Registry，实现动态的服务注册发现机制； 需要考虑分布式下面的事务一致性，CAP原则下，两段式提交不能保证性能，事务">
 <meta property="og:type" content="article">
-<meta property="og:title" content="曹祖鹏的Blog">
-<meta property="og:url" content="joecao.github.io/2017/06/22/多研究些架构，少谈些框架（1）-论微服务架构的核心概念/index.html">
+<meta property="og:title" content="多研究些架构，少谈些框架（1） -- 论微服务架构的核心概念">
+<meta property="og:url" content="joecao.github.io/2017/06/09/多研究些架构，少谈些框架（1）-论微服务架构的核心概念/index.html">
 <meta property="og:site_name" content="曹祖鹏的Blog">
-<meta property="og:description" content="多研究些架构，少谈些框架（1） – 论微服务架构的核心概念2017-6-9 曹祖鹏 微服务架构和SOA区别微服务现在辣么火，业界流行的对比的却都是所谓的Monolithic单体应用，而大量的系统在十几年前都是已经是分布式系统了，那么微服务作为新的理念和原来的分布式系统，或者说SOA（面向服务架构）是什么区别呢？我们先看相同点：  需要Registry，实现动态的服务注册发现机制； 需要考虑分布式下">
-<meta property="og:updated_time" content="2017-06-22T07:05:15.000Z">
+<meta property="og:description" content="2017-6-9 曹祖鹏 微服务架构和SOA区别微服务现在辣么火，业界流行的对比的却都是所谓的Monolithic单体应用，而大量的系统在十几年前都是已经是分布式系统了，那么微服务作为新的理念和原来的分布式系统，或者说SOA（面向服务架构）是什么区别呢？我们先看相同点：  需要Registry，实现动态的服务注册发现机制； 需要考虑分布式下面的事务一致性，CAP原则下，两段式提交不能保证性能，事务">
+<meta property="og:updated_time" content="2017-06-22T10:58:13.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="曹祖鹏的Blog">
-<meta name="twitter:description" content="多研究些架构，少谈些框架（1） – 论微服务架构的核心概念2017-6-9 曹祖鹏 微服务架构和SOA区别微服务现在辣么火，业界流行的对比的却都是所谓的Monolithic单体应用，而大量的系统在十几年前都是已经是分布式系统了，那么微服务作为新的理念和原来的分布式系统，或者说SOA（面向服务架构）是什么区别呢？我们先看相同点：  需要Registry，实现动态的服务注册发现机制； 需要考虑分布式下">
+<meta name="twitter:title" content="多研究些架构，少谈些框架（1） -- 论微服务架构的核心概念">
+<meta name="twitter:description" content="2017-6-9 曹祖鹏 微服务架构和SOA区别微服务现在辣么火，业界流行的对比的却都是所谓的Monolithic单体应用，而大量的系统在十几年前都是已经是分布式系统了，那么微服务作为新的理念和原来的分布式系统，或者说SOA（面向服务架构）是什么区别呢？我们先看相同点：  需要Registry，实现动态的服务注册发现机制； 需要考虑分布式下面的事务一致性，CAP原则下，两段式提交不能保证性能，事务">
   
     <link rel="alternative" href="/atom.xml" title="曹祖鹏的Blog" type="application/atom+xml">
   
@@ -59,8 +59,6 @@
 				<li><a href="/">主页</a></li>
 	        
 				<li><a href="/archives">所有文章</a></li>
-	        
-				<li><a href="/tags/随笔/">随笔</a></li>
 	        
 			</ul>
 		</nav>
@@ -116,8 +114,6 @@
 			
 				
 			
-				
-			
 			
 			
 			<nav class="header-nav">
@@ -133,14 +129,12 @@
 			</nav>
 
 			<nav class="header-menu js-header-menu">
-				<ul style="width: 70%">
+				<ul style="width: 50%">
 				
 				
-					<li style="width: 33.333333333333336%"><a href="/">主页</a></li>
+					<li style="width: 50%"><a href="/">主页</a></li>
 		        
-					<li style="width: 33.333333333333336%"><a href="/archives">所有文章</a></li>
-		        
-					<li style="width: 33.333333333333336%"><a href="/tags/随笔/">随笔</a></li>
+					<li style="width: 50%"><a href="/archives">所有文章</a></li>
 		        
 				</ul>
 			</nav>
@@ -158,9 +152,24 @@
             <article id="post-多研究些架构，少谈些框架（1）-论微服务架构的核心概念" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      多研究些架构，少谈些框架（1） -- 论微服务架构的核心概念
+    </h1>
+  
+
+        
+        <a href="/2017/06/09/多研究些架构，少谈些框架（1）-论微服务架构的核心概念/" class="archive-article-date">
+  	<time datetime="2017-06-09T07:00:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-06-09</time>
+</a>
+        
+      </header>
+    
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="多研究些架构，少谈些框架（1）-–-论微服务架构的核心概念"><a href="#多研究些架构，少谈些框架（1）-–-论微服务架构的核心概念" class="headerlink" title="多研究些架构，少谈些框架（1） – 论微服务架构的核心概念"></a>多研究些架构，少谈些框架（1） – 论微服务架构的核心概念</h2><p><em>2017-6-9 曹祖鹏</em></p>
+        <p><em>2017-6-9 曹祖鹏</em></p>
 <h4 id="微服务架构和SOA区别"><a href="#微服务架构和SOA区别" class="headerlink" title="微服务架构和SOA区别"></a>微服务架构和SOA区别</h4><p>微服务现在辣么火，业界流行的对比的却都是所谓的Monolithic单体应用，而大量的系统在十几年前都是已经是分布式系统了，那么微服务作为新的理念和原来的分布式系统，或者说SOA（面向服务架构）是什么区别呢？<br>我们先看<strong>相同点</strong>：</p>
 <ul>
 <li>需要Registry，实现动态的服务注册发现机制；</li>
@@ -284,7 +293,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="http://s.jiathis.com/qrcode.php?url=http:joecao.github.io/2017/06/22/多研究些架构，少谈些框架（1）-论微服务架构的核心概念/" alt="微信分享二维码">
+      <img src="http://s.jiathis.com/qrcode.php?url=http:joecao.github.io/2017/06/09/多研究些架构，少谈些框架（1）-论微服务架构的核心概念/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -298,11 +307,15 @@
   
 <nav id="article-nav">
   
-  
-    <a href="/2017/06/22/微服务之构建容错和自动降级的系统/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title"></div>
-      <i class="icon-circle-right"></i>
+    <a href="/2017/06/09/微服务之构建容错和自动降级的系统/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          微服务之构建容错&amp;自动降级的系统
+        
+      </div>
     </a>
+  
   
 </nav>
 
@@ -487,7 +500,7 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
     
     	<section class="tools-section tools-section-me" q-show="aboutme">
   	  	
-  	  		<div class="aboutme-wrap" id="js-aboutme">很惭愧&lt;br&gt;&lt;br&gt;只做了一点微小的工作&lt;br&gt;谢谢大家</div>
+  	  		<div class="aboutme-wrap" id="js-aboutme">70后“老”程序员，&lt;br&gt; 涉猎过企业级、电信应用开发和互联网开发等多个领域。&lt;br&gt;&lt;br&gt;非计算机专业出身但热爱技术，&lt;br&gt;擅长的技术包括：Java、Python、DDD 等等，&lt;br&gt;目前关注点是对领域驱动设计和微服务架构。&lt;br&gt;</div>
   	  	
     	</section>
     
