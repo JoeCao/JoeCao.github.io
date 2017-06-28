@@ -22,7 +22,8 @@
 <meta property="og:image" content="https://user-images.githubusercontent.com/3287183/27164080-05a6c6a8-51be-11e7-8815-68c4c7ee7762.png">
 <meta property="og:image" content="https://user-images.githubusercontent.com/3287183/27272730-5dc03d36-54fe-11e7-976d-c6c83a45e982.png">
 <meta property="og:image" content="https://user-images.githubusercontent.com/3287183/27272809-c14d85ac-54fe-11e7-9a29-605627970cbc.png">
-<meta property="og:updated_time" content="2017-06-23T03:30:32.000Z">
+<meta property="og:image" content="https://user-images.githubusercontent.com/3287183/27618913-8ebf4766-5bf1-11e7-95ce-56055ad9effe.jpg">
+<meta property="og:updated_time" content="2017-06-28T03:22:27.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="多研究些架构，少谈些框架（3）-- 微服务和事件驱动">
 <meta name="twitter:description" content="2017-6-16 曹祖鹏 接上篇，我们采用了领域驱动的开发方式，使用了充血模型，享受了他的好处，但是也不得不面对他带来的弊端。这个弊端在分布式的微服务架构下面又被放大。 事务一致性事务一致性的问题在Monolithic下面不是大问题，在微服务下面却是很致命，我们回顾一下所谓的ACID原则  Atomicity - 原子性，改变数据状态要么是一起完成，要么一起失败 Consistency - 一致">
@@ -235,7 +236,8 @@
 <p>不过用了这些数据库日志的工具，会和具体的数据库实现（甚至是特定的版本）绑定，决策的时候请慎重。</p>
 <h5 id="使用Event-Sourcing-事件溯源"><a href="#使用Event-Sourcing-事件溯源" class="headerlink" title="使用Event Sourcing 事件溯源"></a>使用Event Sourcing 事件溯源</h5><p>事件溯源对我们来说是一个特别的思路，他并不持久化Entity对象，而是只把初始状态和每次变更的Event记录下来，并在内存中根据Event还原Entity对象的最新状态，具体实现很类似数据库的Redolog的实现，只是他把这种机制放到了应用层来。<br>虽然事件溯源有很多宣称的优势，引入这种技术要特别小心，首先他不一定适合大部分的业务场景，一旦变更很多的情况下，效率的确是个大问题；另外一些查询的问题也是困扰。<br>我们仅仅在个别的业务上探索性的使用Event Souring和AxonFramework，由于实现起来比较复杂，具体的情况还需要等到实践一段时间后再来总结，也许需要额外的一篇文章来详细描述</p>
 <p>以上是对事件驱动在微服务架构中一些我的理解，文章部分借鉴了Chris Richardson的Blog，<a href="https://www.nginx.com/blog/event-driven-data-management-microservices/" target="_blank" rel="external">https://www.nginx.com/blog/event-driven-data-management-microservices/</a> 在此我向他表示致谢 。</p>
-<h4 id="版权说明"><a href="#版权说明" class="headerlink" title="版权说明"></a>版权说明</h4><p>本文采用 CC BY 3.0 CN协议 进行许可。 可自由转载、引用，但需署名作者且注明文章出处</p>
+<h4 id="版权说明"><a href="#版权说明" class="headerlink" title="版权说明"></a>版权说明</h4><p>本文采用 CC BY 3.0 CN协议 进行许可。 可自由转载、引用，但需署名作者且注明文章出处。如转载至微信公众号，请在文末添加作者公众号二维码。</p>
+<h4 id="关注我"><a href="#关注我" class="headerlink" title="关注我"></a>关注我</h4><p>微信公众号<br><img src="https://user-images.githubusercontent.com/3287183/27618913-8ebf4766-5bf1-11e7-95ce-56055ad9effe.jpg" alt="qrcode_for_8"></p>
 
       
 
