@@ -6,24 +6,24 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="joecao.github.io">
-  <title>多研究些架构，少谈些框架（2）-- 微服务和充血模型 | 曹祖鹏的Blog</title>
+  <title>领域驱动设计和Spring | 曹祖鹏的Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="2017-6-12 曹祖鹏上篇我们聊了微服务的DDD之间的关系，很多人还是觉得很虚幻，DDD那么复杂的理论，聚合根、值对象、事件溯源，到底我们该怎么入手呢？实际上DDD和面向对象设计、设计模式等等理论有千丝万缕的联系，如果不熟悉OOA、OOD，DDD也是使用不好的。不过学习这些OO理论的时候，大家往往感觉到无用武之地，因为大部分的Java程序员开发生涯是从学习J2EE经典的分层理论开始的（Acti">
+  <meta name="description" content="原文 http://static.olivergierke.de/lectures/ddd-and-spring/ 1、介绍这篇文章是的介绍一下领域驱动设计的基础构件、概念和Java的web应用（主要是基于Spring框架）之间的关系和区别。这篇文章的第二部分讲了怎么把实体、聚合根、仓储映射到使用Spring框架的Java应用中2、领域驱动设计Eric Evans的《领域驱动设计》无疑是软件设计领">
 <meta property="og:type" content="article">
-<meta property="og:title" content="多研究些架构，少谈些框架（2）-- 微服务和充血模型">
-<meta property="og:url" content="joecao.github.io/2017/06/12/多研究些架构，少谈些框架（2）-微服务和充血模型/index.html">
+<meta property="og:title" content="领域驱动设计和Spring">
+<meta property="og:url" content="joecao.github.io/2017/06/29/[译]领域驱动设计和Spring/index.html">
 <meta property="og:site_name" content="曹祖鹏的Blog">
-<meta property="og:description" content="2017-6-12 曹祖鹏上篇我们聊了微服务的DDD之间的关系，很多人还是觉得很虚幻，DDD那么复杂的理论，聚合根、值对象、事件溯源，到底我们该怎么入手呢？实际上DDD和面向对象设计、设计模式等等理论有千丝万缕的联系，如果不熟悉OOA、OOD，DDD也是使用不好的。不过学习这些OO理论的时候，大家往往感觉到无用武之地，因为大部分的Java程序员开发生涯是从学习J2EE经典的分层理论开始的（Acti">
-<meta property="og:image" content="https://user-images.githubusercontent.com/3287183/27027640-d534d6ca-4f94-11e7-95bf-1109105caf5b.jpg">
-<meta property="og:image" content="https://user-images.githubusercontent.com/3287183/27028231-c1eac5d2-4f96-11e7-9dc5-60c1e36e43e4.png">
-<meta property="og:image" content="https://user-images.githubusercontent.com/3287183/27028424-52b00316-4f97-11e7-83ca-fc3294c84743.png">
-<meta property="og:image" content="https://user-images.githubusercontent.com/3287183/27033547-62612bfe-4fac-11e7-880f-af651b7b7579.png">
+<meta property="og:description" content="原文 http://static.olivergierke.de/lectures/ddd-and-spring/ 1、介绍这篇文章是的介绍一下领域驱动设计的基础构件、概念和Java的web应用（主要是基于Spring框架）之间的关系和区别。这篇文章的第二部分讲了怎么把实体、聚合根、仓储映射到使用Spring框架的Java应用中2、领域驱动设计Eric Evans的《领域驱动设计》无疑是软件设计领">
+<meta property="og:image" content="https://ws2.sinaimg.cn/large/006tKfTcgy1fh6t3fmnauj31kw154grh.jpg">
+<meta property="og:image" content="https://ws1.sinaimg.cn/large/006tKfTcgy1fh6t73dzmsj31jn105dhn.jpg">
+<meta property="og:image" content="https://ws1.sinaimg.cn/large/006tKfTcgy1fh6t8vsycrj31kw0yjabl.jpg">
+<meta property="og:image" content="https://ws3.sinaimg.cn/large/006tKfTcgy1fh6tw0agfcj31kw0ycq58.jpg">
 <meta property="og:image" content="https://user-images.githubusercontent.com/3287183/27618913-8ebf4766-5bf1-11e7-95ce-56055ad9effe.jpg">
-<meta property="og:updated_time" content="2017-06-28T03:22:25.000Z">
+<meta property="og:updated_time" content="2017-07-27T12:53:59.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="多研究些架构，少谈些框架（2）-- 微服务和充血模型">
-<meta name="twitter:description" content="2017-6-12 曹祖鹏上篇我们聊了微服务的DDD之间的关系，很多人还是觉得很虚幻，DDD那么复杂的理论，聚合根、值对象、事件溯源，到底我们该怎么入手呢？实际上DDD和面向对象设计、设计模式等等理论有千丝万缕的联系，如果不熟悉OOA、OOD，DDD也是使用不好的。不过学习这些OO理论的时候，大家往往感觉到无用武之地，因为大部分的Java程序员开发生涯是从学习J2EE经典的分层理论开始的（Acti">
-<meta name="twitter:image" content="https://user-images.githubusercontent.com/3287183/27027640-d534d6ca-4f94-11e7-95bf-1109105caf5b.jpg">
+<meta name="twitter:title" content="领域驱动设计和Spring">
+<meta name="twitter:description" content="原文 http://static.olivergierke.de/lectures/ddd-and-spring/ 1、介绍这篇文章是的介绍一下领域驱动设计的基础构件、概念和Java的web应用（主要是基于Spring框架）之间的关系和区别。这篇文章的第二部分讲了怎么把实体、聚合根、仓储映射到使用Spring框架的Java应用中2、领域驱动设计Eric Evans的《领域驱动设计》无疑是软件设计领">
+<meta name="twitter:image" content="https://ws2.sinaimg.cn/large/006tKfTcgy1fh6t3fmnauj31kw154grh.jpg">
   
     <link rel="alternative" href="/atom.xml" title="曹祖鹏的Blog" type="application/atom+xml">
   
@@ -160,55 +160,58 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-多研究些架构，少谈些框架（2）-微服务和充血模型" class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-[译]领域驱动设计和Spring" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      多研究些架构，少谈些框架（2）-- 微服务和充血模型
+      领域驱动设计和Spring
     </h1>
   
 
         
-        <a href="/2017/06/12/多研究些架构，少谈些框架（2）-微服务和充血模型/" class="archive-article-date">
-  	<time datetime="2017-06-12T07:00:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-06-12</time>
+        <a href="/2017/06/29/[译]领域驱动设计和Spring/" class="archive-article-date">
+  	<time datetime="2017-06-29T12:46:25.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-06-29</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p><em>2017-6-12 曹祖鹏</em><br>上篇我们聊了微服务的DDD之间的关系，很多人还是觉得很虚幻，DDD那么复杂的理论，聚合根、值对象、事件溯源，到底我们该怎么入手呢？<br>实际上DDD和面向对象设计、设计模式等等理论有千丝万缕的联系，如果不熟悉OOA、OOD，DDD也是使用不好的。不过学习这些OO理论的时候，大家往往感觉到无用武之地，因为大部分的Java程序员开发生涯是从学习J2EE经典的分层理论开始的（Action、Service、Dao），在这种分层理论中，我们基本没有啥机会使用那些所谓的“行为型”的设计模式，这里的核心原因，就是J2EE经典分层的开发方式是“贫血模型”。<br>Martin Fowler在他的《企业应用架构模式》这本书中提出了两种开发方式“事务脚本”和“领域模型”，这两种开发分别对应了“贫血模型”和“充血模型”。</p>
-<h4 id="事务脚本开发模式"><a href="#事务脚本开发模式" class="headerlink" title="事务脚本开发模式"></a>事务脚本开发模式</h4><ul>
-<li>事务脚本的核心是过程，可以认为大部分的业务处理都是一条条的SQL，事务脚本把单个SQL组织成为一段业务逻辑，在逻辑执行的时候，使用事务来保证逻辑的ACID。最典型的就是存储过程。当然我们在平时J2EE经典分层架构中，经常在Service层使用事务脚本。<br><img src="https://user-images.githubusercontent.com/3287183/27027640-d534d6ca-4f94-11e7-95bf-1109105caf5b.jpg" alt="aa1"></li>
-</ul>
-<p>使用这种开发方式，对象只用于在各层之间传输数据用，这里的对象就是“贫血模型”，只有数据字段和Get/Set方法，没有逻辑在对象中。</p>
-<p>我们以一个库存扣减的场景来举例：</p>
+        <p>原文 <a href="http://static.olivergierke.de/lectures/ddd-and-spring/" target="_blank" rel="external">http://static.olivergierke.de/lectures/ddd-and-spring/</a></p>
+<p>1、<strong>介绍</strong><br>这篇文章是的介绍一下领域驱动设计的基础构件、概念和Java的web应用（主要是基于Spring框架）之间的关系和区别。<br>这篇文章的第二部分讲了怎么把实体、聚合根、仓储映射到使用Spring框架的Java应用中<br>2、领域驱动设计<br>Eric Evans的《领域驱动设计》无疑是软件设计领域最重要的几本书之一。<br>这本书主要集中在软件开发中如何处理领域和软件的映射关系— 开始强调领域通用语言(domain ubiquitous language)，通过语言来提取模型，最终映射到一个可工作的软件上。<br>我们已经对软件设计模式比较熟悉了，他是用于描述和提炼Class和Class关系的技术语言。而DDD是一种用于程序员和业务沟通的更通用的语言，使用DDD可以最终将代码映射到模型上。</p>
+<p>2.1 基础构件<br>构件是DDD中的一些专有名词，让我们看一下图<br><img src="https://ws2.sinaimg.cn/large/006tKfTcgy1fh6t3fmnauj31kw154grh.jpg" alt="DDD的专有名词"></p>
+<p>2.1.1 限界上下文（Bounded Context)<br>当进行领域建模的时候，任何将其作为一个整体进行建模的尝试注定会失败。因为各类利益相关者和他们对领域的看法可能完全不同，试图建立一个单一的、独特的模型来满足所有需求是<strong>完全不可能</strong>的，会把系统搞得极为复杂。<br>让我们看一个示例图，这个图描述了销售领域已经识别出的模型<br><img src="https://ws1.sinaimg.cn/large/006tKfTcgy1fh6t73dzmsj31jn105dhn.jpg" alt="销售领域"></p>
+<p>我们把模型元素稍加区分，成为分离的模型，就可以看出客户和订单的，他们是不同上下文的核心的概念。<br><img src="https://ws1.sinaimg.cn/large/006tKfTcgy1fh6t8vsycrj31kw0yjabl.jpg" alt="区分"></p>
+<p>在这里，我们确定了系统战略层面的核心部分，这些部分可能都涉及客户或订单的概念，但通常不同限界上下文对它们的属性感兴趣的部分并不相同。比如 Accounting上下文通常对<strong>客户</strong>的计费信息和不同的支付选项感兴趣，而Shipping上下文的对<strong>客户</strong>的唯一目标是运送地址，然后跟踪订单。 Order上下文可能通过<strong>客户</strong>的订单项了解商品信息，但实际上只涉及商品类目基本的内容（译者注：商品规格、商品详情这些信息Order上下文并不关注）。<br><img src="https://ws3.sinaimg.cn/large/006tKfTcgy1fh6tw0agfcj31kw0ycq58.jpg" alt="概念在不同的上下文中"></p>
+<p>这里的模型元素可能看起来会以不同的方式反映在系统的不同层面中（译者：指的是Product和Customer对象会存在多个领域中，但是不同的概念）。现代的软件架构甚至更进一步，积极的通过冗余和最终一致性降低单个系统的复杂度，提升系统弹性，并提高整体的开发生产力（译者：CQRS和事件驱动架构）</p>
+<p>2.1.2 值对象<br>代表了领域对象中的概念 — 值 （和他的名字一样），值对象没有主键没有生命周期。而且他是不可变的，以确保可以在多个消费者之间完整的共享。在Java中，String对象是符合这些特性的一个很好的例子，不过这不太合适领域设计的例子，因为他太抽象了。一般来说，信用卡号码、电子邮箱地都可以很好的被构建为值对象。值对象常常是实体的属性。将领域元素实现为值对象可以大大增强代码的可读性，正如Dan Bergh Johnsson在他的DDD中的Power Use of Value Objects所展示的。<br>由于需要实现Getter、equals()、hashCode()方法，纯Java实现值对象相当麻烦（译者：特别是没有Builder方法）。所以很多人不愿意做，值对象往往被遗忘。现在你可以用Lombok这个工具来方便的构造处理值对象。</p>
+<p>2.1.3 实体类<br>和值对象相比，实体的核心特征就是他是有主键。两个都叫Michael Muller的客户可能不是一个实例，我们通常会引入一个专用的属性来识别他们。另外一个特征是实体类在问题域中有自己的生命周期。他们被创建，由领域事件驱动，经历各种状态的变化，最终到达一个结束的状态（即可能被删除，但是不一定是物理删除）。实体类通常涉及其他的实体，并包含值对象或者基本类型（类似Java中的int boolean double 等）</p>
+<p>实体类 vs 值对象<br>一个领域概念到底是实体还是值对象？这个要看上下文。而且事实上，一个概念在不同的上下文中他的类型是不一样的。比如一个地址可能是一个商店的属性，一个值对象。但是当他们是一个客户的配送和计费地址的时候，他们就是实体类了，因为这些地址有了生命周期，可以被创建、修改、删除。</p>
+<p>2.1.4 聚合根<br>有一些实体在系统中扮演了很特殊的角色。举例，一个由订单项构成的订单，订单实体可以通过遍历内部的订单项单价，计算出一个总价，如果总价高于某个设定最小值，该订单才会生效。这种实体通常我们把它上升为聚合根，聚合根有如下的含义<br>1、聚合根对聚合的整体状态负责，对聚合的状态的修改会导致聚合迁移到一个状态或者触发一个异常<br>2、为了保证这个职责，仓储（Repository）只能访问聚合根。<strong>非聚合根的实体类的状态变更，必须通过聚合根触发</strong>。（译者：仓储针对聚合根和他的属性对象是整存整取，比如获取一辆车的轮子，我们Repository只能有获取车辆的方法，轮子是通过车辆的属性访问，不能直接访问轮子对象）<br>3、聚合形成一个自然的一致性边界，对其他聚合的应用需要通过by-id的方式实现。</p>
+<p>2.1.5 仓储<br>从概念上讲，仓库模拟聚合根的集合，并允许访问聚合的子集或者单个属性。他们通常由某种持久化机制支撑，但是不应该把他们暴露给客户端。仓储可以引用实体，但是反过来不行。</p>
+<p>2.1.6 领域服务<br>领域服务是实现那种无法唯一的分配到实体或者值对象方法的服务，同时他还承担了实体值对象和仓储之间的功能逻辑（译者：领域服务通常承担领域对象间的方法，领域服务是无状态的，比如两个账号之间的转账）。虽然有领域服务，但是业务逻辑尽量的多在实体类和值对象中实现。因为他们可以更容易的被测试。</p>
+<p>2.2 在Spring 应用中的领域驱动设计<br>领域的概念和DDD概念的映射方法极大的影响了这些概念到代码的映射。想要有效的编写基于Spring的Java应用，必须区分newables和injectables这两类对象。<br>正如名字所暗示的那样，这个区别就在开发者在获取特定领域元素的方式中。一个newable的对象是可以通过操作符实例化，当然这种实例化必须限制在尽可能少的地方，如果能使用工厂模式会比较好，实体和值对象是newable的。而injectable往往是一个spring的组件，这意味着spring将控制其生命周期，创建实例并销毁它们。这将允许Spring容器为服务的实例提供事务和安全的基础设施。客户端通过依赖注入的方式获取实例，Repository和Service都是需要注入的。</p>
+<p>这两组内的区别定义在依赖方向从injectables到newables。 一般来说</p>
 <ul>
-<li>业务场景<br>首先谈一下业务场景，一个下订单扣减库存（锁库存），这个很简单<br>先判断库存是否足够，然后扣减可销售库存，增加订单占用库存，然后再记录一个库存变动记录日志（作为凭证）</li>
-<li>贫血模型的设计<br>首先设计一个库存表 Stock，有如下字段<br><img src="https://user-images.githubusercontent.com/3287183/27028231-c1eac5d2-4f96-11e7-9dc5-60c1e36e43e4.png" alt="image"></li>
+<li>值对象Value Object - JPA @Emeddable 注解 +对应的equals(…)和 hashCode()方法 （Lombok的@Value可以有效的帮助生成）</li>
+<li>实体类Entity  - JPA @Entity 注解 +对应的equals(…)和 hashCode()方法</li>
+<li>仓储Repository - Spring的组件，通常用Spring的Repository的接口。</li>
+<li>领域服务Domain Service - 通常是Spring的组件，使用@Component注解。如果这个服务不需要事务或者安全的支撑，也可以直接new。</li>
 </ul>
-<p>设计一个Stock对象(Getter和Setter省略)<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Stock</span> </span>&#123;</div><div class="line">	<span class="keyword">private</span> String spuId;</div><div class="line">	<span class="keyword">private</span> String skuId;</div><div class="line">	<span class="keyword">private</span> <span class="keyword">int</span> stockNum;</div><div class="line">	<span class="keyword">private</span> <span class="keyword">int</span> orderStockNum;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>不是Spring中所有的对象都可以映射到DDD的分类中。剩下的一般分为两组：</p>
+<p><strong>应用配置Application configuration</strong> - 对象或者配置模块<br><strong>技术适配器Technical adapter</strong> - 用于将Spring的逻辑层通过一种远程访问技术发布给客户端。在web应用中，远程技术指的是HTTP、HTML和JavaScript。在Spring MVC中，Controller对象将负责翻译远程的对象(比如request、request parameter、payload、response等） 为本地的领域概念，并调用Service、实体类、值对象等等。</p>
+<p>3 深入阅读<br>检查Guestbook和Videoshop确保您了解了哪些类实现哪些DDD的概念<br>区别您了解这些概念（实体类的主键、值对象的不变性、服务的依赖注入）的不同特性是如何实现的。</p>
+<p>Appendix<br>Appendix A: Bibliography</p>
 <ul>
-<li><p>Service入口<br>设计一个StockService，在其中的lock方法中写逻辑<br>入参为(spuId, skuId, num)<br>实现伪代码</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">count = select stocknum from stock where spuId=xx and skuid=xx</div><div class="line"><span class="keyword">if</span> count&gt;num &#123;</div><div class="line">     update stock set stocknum=stocknum-num, orderstocknum=orderstocknum+num  where skuId=xx and spuId=xx</div><div class="line">&#125; <span class="keyword">else</span> &#123;</div><div class="line">     <span class="comment">//库存不足，扣减失败</span></div><div class="line">&#125;</div><div class="line">insert stock_log set xx=xx, date= <span class="keyword">new</span> Date()</div></pre></td></tr></table></figure>
+<li><p>[ddd] - Eric Evans — Domain-Driven Design: Tackling Complexity in the Heart of Software- Addison Wesley. 2003.</p>
 </li>
-<li><p>ok，打完收工，如果做的好一些，可以把update和select count合一，这样可以利用一条语句完成自旋，解决并发问题（高手）。<br>小结一下：<br>有没有发现，在这个业务领域非常重要的核心逻辑 – 下订单扣减库存中操作过程中，<strong>Stock对象根本不用出现</strong>，全部是数据库操作SQL，所谓的业务逻辑就是由多条SQL构成。Stock只是CRUD的数据对象而已，没逻辑可言。</p>
+<li><p>[ddd-quickly] - Abel Avram, Floyd Marinescu — Domain-Driven Design Quickly. InfoQ. 2006.</p>
 </li>
-<li><p>马丁福勒定义的“贫血模型”是反模式，面对简单的小系统用事务脚本方式开发没问题，业务逻辑复杂了，业务逻辑、各种状态散布在大量的函数中，维护扩展的成本一下子就上来，贫血模型没有实施微服务的基础。</p>
+<li><p>[power-of-value-objects] - Dan Bergh Johnsson — Power Use of Value Objects in DDD. InfoQ. 2009.</p>
 </li>
-<li>虽然我们用Java这样的面向对象语言来开发，但是其实和过程型语言是一样的，所以很多情况下大家用数据库的存储过程来替代Java写逻辑反而效果会更好，（ps：用了Spring boot也不是微服务），</li>
-</ul>
-<h4 id="领域模型的开发模式"><a href="#领域模型的开发模式" class="headerlink" title="领域模型的开发模式"></a>领域模型的开发模式</h4><ul>
-<li>领域模型是将数据和行为封装在一起，并与现实世界的业务对象相映射。各类具备明确的职责划分，使得逻辑分散到合适对象中。这样的对象就是“充血模型”  。</li>
-<li>在具体实践中，我们需要明确一个概念，就是领域模型是有状态的，他代表一个实际存在的事物。还是接着上面的例子，我们设计Stock对象需要代表一种商品的实际库存，并在这个对象上面加上业务逻辑的方法<br><img src="https://user-images.githubusercontent.com/3287183/27028424-52b00316-4f97-11e7-83ca-fc3294c84743.png" alt="InventoryClass"></li>
-</ul>
-<p>这样做下单锁库存业务逻辑的时候，每次必须先从Repository根据主键load还原Inventory这个对象，然后执行对应的lock(num)方法改变这个Inventory对象的状态（属性也是状态的一种），然后再通过Repository的save方法把这个对象持久化到存储去。<br>完成上述一系列操作的是Application,Application对外提供了这种集成操作的接口</p>
-<p><img src="https://user-images.githubusercontent.com/3287183/27033547-62612bfe-4fac-11e7-880f-af651b7b7579.png" alt="image"><br>领域模型开发方法最重要的是把扣减造成的状态变化的细节放到了Inventory对象执行，这就是对业务逻辑的封装。<br>Application对象的lock方法可以和事务脚本方法的StockService的lock来做个对比，StockService是完全掌握所有细节，一旦有了变化（比如库存为0也可以扣减），Service方法要跟着变；而Application这种方式不需要变化，只要在Inventory对象内部计算就可以了。代码放到了合适的地方，计算在合适层次，一切都很合理。这种设计可以充分利用各种OOD、OOP的理论把业务逻辑实现的很漂亮。</p>
-<ul>
-<li>充血模型的缺点<br>从上面的例子，在Repository的load 到执行业务方法，再到save回去，这是需要耗费一定时间的，但是这个过程中如果多个线程同时请求对Inventory库存的锁定，那就会导致状态的不一致，麻烦的是针对库存的并发不仅难处理而且很常见。<br>贫血模型完全依靠数据库对并发的支撑，实现可以简化很多，但充血模型就得自己实现了，不管是在内存中通过锁对象，还是使用Redis的远程锁机制，都比贫血模型复杂而且可靠性下降，这是充血模型带来的挑战。更好的办法是可以通过事件驱动的架构来取消并发。<h4 id="领域模型和微服务的关系"><a href="#领域模型和微服务的关系" class="headerlink" title="领域模型和微服务的关系"></a>领域模型和微服务的关系</h4>上面讲了领域模型的实现，但是他和微服务是什么关系呢？在实践中，这个Inventory是一个限界上下文的聚合根，我们可以认为一个聚合根就是一个微服务进程。<br>不过问题又来了，一个库存的Inventory一定和商品信息是有关联的，仅仅靠Inventory中的冗余那点商品ID是不够的，商品的上下架状态等等都是业务逻辑需要的，那不是又把商品Sku这样的重型对象引入了这个微服务？两个重型的对象在一个服务中？这样的微服务拆不开啊，还是必须依靠商品库？！<br>请参考下一篇，通过事件驱动架构来完成领域间的松耦合。</li>
 </ul>
 <h4 id="版权说明"><a href="#版权说明" class="headerlink" title="版权说明"></a>版权说明</h4><p>本文采用 CC BY 3.0 CN协议 进行许可。 可自由转载、引用，但需署名作者且注明文章出处。如转载至微信公众号，请在文末添加作者公众号二维码。</p>
 <h4 id="关注我"><a href="#关注我" class="headerlink" title="关注我"></a>关注我</h4><p>微信公众号<br><img src="https://user-images.githubusercontent.com/3287183/27618913-8ebf4766-5bf1-11e7-95ce-56055ad9effe.jpg" alt="qrcode_for_8"></p>
@@ -291,7 +294,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="http://s.jiathis.com/qrcode.php?url=http:joecao.github.io/2017/06/12/多研究些架构，少谈些框架（2）-微服务和充血模型/" alt="微信分享二维码">
+      <img src="http://s.jiathis.com/qrcode.php?url=http:joecao.github.io/2017/06/29/[译]领域驱动设计和Spring/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -305,18 +308,18 @@
   
 <nav id="article-nav">
   
-    <a href="/2017/06/23/多研究些架构，少谈些框架（3）- 微服务和事件驱动/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2017/07/16/Design for Failure-Saga模式和消息驱动/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
-          (no title)
+          Saga模式和事件驱动
         
       </div>
     </a>
   
   
-    <a href="/2017/06/09/多研究些架构，少谈些框架（1）-论微服务架构的核心概念/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">多研究些架构，少谈些框架（1） -- 论微服务架构的核心概念</div>
+    <a href="/2017/06/23/多研究些架构，少谈些框架（3）- 微服务和事件驱动/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title"></div>
       <i class="icon-circle-right"></i>
     </a>
   

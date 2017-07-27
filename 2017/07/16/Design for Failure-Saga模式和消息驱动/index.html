@@ -6,24 +6,22 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="joecao.github.io">
-  <title>多研究些架构，少谈些框架（2）-- 微服务和充血模型 | 曹祖鹏的Blog</title>
+  <title>Saga模式和事件驱动 | 曹祖鹏的Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="2017-6-12 曹祖鹏上篇我们聊了微服务的DDD之间的关系，很多人还是觉得很虚幻，DDD那么复杂的理论，聚合根、值对象、事件溯源，到底我们该怎么入手呢？实际上DDD和面向对象设计、设计模式等等理论有千丝万缕的联系，如果不熟悉OOA、OOD，DDD也是使用不好的。不过学习这些OO理论的时候，大家往往感觉到无用武之地，因为大部分的Java程序员开发生涯是从学习J2EE经典的分层理论开始的（Acti">
+  <meta name="description" content="在领域驱动设计的实践中，我一直有个问题没想明白 – 领域聚合对象对于某一类事物的抽象是很准确的，比如库存、商品、会员，这个和现实生活中的能一一对应上。通过充血模型将数据和行为统一起来，很容易理解。但是类似订单、审批流程，这类逻辑一直没有很好的抽象方式。从内部状态看，他纯粹是个有限状态机，没啥特别的商业逻辑；从行为看，却发现他的所有状态变更，都是需要调用外部模块，并根据外部模块的返回结果，再确定迁越">
 <meta property="og:type" content="article">
-<meta property="og:title" content="多研究些架构，少谈些框架（2）-- 微服务和充血模型">
-<meta property="og:url" content="joecao.github.io/2017/06/12/多研究些架构，少谈些框架（2）-微服务和充血模型/index.html">
+<meta property="og:title" content="Saga模式和事件驱动">
+<meta property="og:url" content="joecao.github.io/2017/07/16/Design for Failure-Saga模式和消息驱动/index.html">
 <meta property="og:site_name" content="曹祖鹏的Blog">
-<meta property="og:description" content="2017-6-12 曹祖鹏上篇我们聊了微服务的DDD之间的关系，很多人还是觉得很虚幻，DDD那么复杂的理论，聚合根、值对象、事件溯源，到底我们该怎么入手呢？实际上DDD和面向对象设计、设计模式等等理论有千丝万缕的联系，如果不熟悉OOA、OOD，DDD也是使用不好的。不过学习这些OO理论的时候，大家往往感觉到无用武之地，因为大部分的Java程序员开发生涯是从学习J2EE经典的分层理论开始的（Acti">
-<meta property="og:image" content="https://user-images.githubusercontent.com/3287183/27027640-d534d6ca-4f94-11e7-95bf-1109105caf5b.jpg">
-<meta property="og:image" content="https://user-images.githubusercontent.com/3287183/27028231-c1eac5d2-4f96-11e7-9dc5-60c1e36e43e4.png">
-<meta property="og:image" content="https://user-images.githubusercontent.com/3287183/27028424-52b00316-4f97-11e7-83ca-fc3294c84743.png">
-<meta property="og:image" content="https://user-images.githubusercontent.com/3287183/27033547-62612bfe-4fac-11e7-880f-af651b7b7579.png">
-<meta property="og:image" content="https://user-images.githubusercontent.com/3287183/27618913-8ebf4766-5bf1-11e7-95ce-56055ad9effe.jpg">
-<meta property="og:updated_time" content="2017-06-28T03:22:25.000Z">
+<meta property="og:description" content="在领域驱动设计的实践中，我一直有个问题没想明白 – 领域聚合对象对于某一类事物的抽象是很准确的，比如库存、商品、会员，这个和现实生活中的能一一对应上。通过充血模型将数据和行为统一起来，很容易理解。但是类似订单、审批流程，这类逻辑一直没有很好的抽象方式。从内部状态看，他纯粹是个有限状态机，没啥特别的商业逻辑；从行为看，却发现他的所有状态变更，都是需要调用外部模块，并根据外部模块的返回结果，再确定迁越">
+<meta property="og:image" content="https://ws2.sinaimg.cn/large/006tKfTcgy1fhodhslo8mj30ky0cqq4c.jpg">
+<meta property="og:image" content="http://os8wjvykw.bkt.clouddn.com/2017-07-18-BASE.jpg">
+<meta property="og:image" content="http://os8wjvykw.bkt.clouddn.com/2017-07-18-SEC.jpg">
+<meta property="og:updated_time" content="2017-07-27T12:52:16.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="多研究些架构，少谈些框架（2）-- 微服务和充血模型">
-<meta name="twitter:description" content="2017-6-12 曹祖鹏上篇我们聊了微服务的DDD之间的关系，很多人还是觉得很虚幻，DDD那么复杂的理论，聚合根、值对象、事件溯源，到底我们该怎么入手呢？实际上DDD和面向对象设计、设计模式等等理论有千丝万缕的联系，如果不熟悉OOA、OOD，DDD也是使用不好的。不过学习这些OO理论的时候，大家往往感觉到无用武之地，因为大部分的Java程序员开发生涯是从学习J2EE经典的分层理论开始的（Acti">
-<meta name="twitter:image" content="https://user-images.githubusercontent.com/3287183/27027640-d534d6ca-4f94-11e7-95bf-1109105caf5b.jpg">
+<meta name="twitter:title" content="Saga模式和事件驱动">
+<meta name="twitter:description" content="在领域驱动设计的实践中，我一直有个问题没想明白 – 领域聚合对象对于某一类事物的抽象是很准确的，比如库存、商品、会员，这个和现实生活中的能一一对应上。通过充血模型将数据和行为统一起来，很容易理解。但是类似订单、审批流程，这类逻辑一直没有很好的抽象方式。从内部状态看，他纯粹是个有限状态机，没啥特别的商业逻辑；从行为看，却发现他的所有状态变更，都是需要调用外部模块，并根据外部模块的返回结果，再确定迁越">
+<meta name="twitter:image" content="https://ws2.sinaimg.cn/large/006tKfTcgy1fhodhslo8mj30ky0cqq4c.jpg">
   
     <link rel="alternative" href="/atom.xml" title="曹祖鹏的Blog" type="application/atom+xml">
   
@@ -160,58 +158,75 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-多研究些架构，少谈些框架（2）-微服务和充血模型" class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-Design for Failure-Saga模式和消息驱动" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      多研究些架构，少谈些框架（2）-- 微服务和充血模型
+      Saga模式和事件驱动
     </h1>
   
 
         
-        <a href="/2017/06/12/多研究些架构，少谈些框架（2）-微服务和充血模型/" class="archive-article-date">
-  	<time datetime="2017-06-12T07:00:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-06-12</time>
+        <a href="/2017/07/16/Design for Failure-Saga模式和消息驱动/" class="archive-article-date">
+  	<time datetime="2017-07-16T12:46:25.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-07-16</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p><em>2017-6-12 曹祖鹏</em><br>上篇我们聊了微服务的DDD之间的关系，很多人还是觉得很虚幻，DDD那么复杂的理论，聚合根、值对象、事件溯源，到底我们该怎么入手呢？<br>实际上DDD和面向对象设计、设计模式等等理论有千丝万缕的联系，如果不熟悉OOA、OOD，DDD也是使用不好的。不过学习这些OO理论的时候，大家往往感觉到无用武之地，因为大部分的Java程序员开发生涯是从学习J2EE经典的分层理论开始的（Action、Service、Dao），在这种分层理论中，我们基本没有啥机会使用那些所谓的“行为型”的设计模式，这里的核心原因，就是J2EE经典分层的开发方式是“贫血模型”。<br>Martin Fowler在他的《企业应用架构模式》这本书中提出了两种开发方式“事务脚本”和“领域模型”，这两种开发分别对应了“贫血模型”和“充血模型”。</p>
-<h4 id="事务脚本开发模式"><a href="#事务脚本开发模式" class="headerlink" title="事务脚本开发模式"></a>事务脚本开发模式</h4><ul>
-<li>事务脚本的核心是过程，可以认为大部分的业务处理都是一条条的SQL，事务脚本把单个SQL组织成为一段业务逻辑，在逻辑执行的时候，使用事务来保证逻辑的ACID。最典型的就是存储过程。当然我们在平时J2EE经典分层架构中，经常在Service层使用事务脚本。<br><img src="https://user-images.githubusercontent.com/3287183/27027640-d534d6ca-4f94-11e7-95bf-1109105caf5b.jpg" alt="aa1"></li>
-</ul>
-<p>使用这种开发方式，对象只用于在各层之间传输数据用，这里的对象就是“贫血模型”，只有数据字段和Get/Set方法，没有逻辑在对象中。</p>
-<p>我们以一个库存扣减的场景来举例：</p>
+        <p>在领域驱动设计的实践中，我一直有个问题没想明白 – 领域聚合对象对于某一类事物的抽象是很准确的，比如库存、商品、会员，这个和现实生活中的能一一对应上。通过充血模型将数据和行为统一起来，很容易理解。<br>但是类似订单、审批流程，这类逻辑一直没有很好的抽象方式。从内部状态看，他纯粹是个有限状态机，没啥特别的商业逻辑；从行为看，却发现他的所有状态变更，都是需要调用外部模块，并根据外部模块的返回结果，再确定迁越到哪个状态。这和我们以前充血模型中将行为控制在只修改本身状态的做法是相抵触的。<br>比如库存实体，不管是出库、入库、下单、发货、上架、下架，改变的只是库存商品的状态和数量，不涉及外部模块。<br>但是对比订单，它的下单、支付、发货、签收等需要支付、库存、配送模块一起配合返回结果，还要处理其他模块的各种各样的失败情况（库存不足，用户没钱支付、用户拒收等等）。<br>这就尴尬了，这样的实体聚合的方法必须依赖外部模块，耦合拆不开，系统不能<strong>自洽</strong>，它的开发、测试、部署上线都是麻烦的事情。<br>这个疑惑直到我了解Saga</p>
+<h4 id="Saga是什么"><a href="#Saga是什么" class="headerlink" title="Saga是什么"></a>Saga是什么</h4><p>Saga是什么？Saga的定义是“长时间活动的事务”(Long Lived Transaction，后文简称为LLT)。他是普林斯顿大学HECTOR GARCIA-MOLINA教授在1987年的一篇关于分布式数据库的论文中提出来的概念。<br><a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.93.7258&amp;rep=rep1&amp;type=pdf" target="_blank" rel="external">Sagas论文</a></p>
+<p>Long Lived从字面意义上不清晰，Long到底意味着多长？事务持续时间是一个小时、一天甚至一周吗？其实都不是，有时候Saga事务时长甚至只有几秒钟，时间跨度并不重要。重要的是什么？关键的是跨系统的多次“事务”，Saga往往由多个外部子事务构成，需要通过多次外部系统的消息交互，才能将整体事务从开始迁移到结束状态，这和我们原来常见的在一个数据库的短事务不一样。比如一个旅行的订单，是由机票、旅馆、租车三个子订单构成，都需要外部的确认，缺任何一个步骤，不能成行，这就是一个典型的LLT。</p>
+<h4 id="ACID和BASE事务"><a href="#ACID和BASE事务" class="headerlink" title="ACID和BASE事务"></a>ACID和BASE事务</h4><p>相对于一般事务我们习惯ACID - 要么一起成功，要么一起失败。<br>但是LLT的话，直接ACID，消耗就太大了，想象一下在酒店人员确认房间信息前，我们前一个机票必须一直都处于占位锁定但不能确认出票的状态，机票供应商可不允许你这样玩。<br>所以Saga采用了BASE（Basic Availability, Soft, Eventual consistency）事务的方式，来避免消耗大量资源的同步、锁定。<br>举例：电商下单，需要冻结商品库存（将可销售库存-1，已销售库存+1），然后扣取用户的帐户余额 ，最终完成订单。 库存不足、帐户余额不足都将导致订单失败。这里库存和支付模块都是单独的服务，有自己的数据存储。</p>
 <ul>
-<li>业务场景<br>首先谈一下业务场景，一个下订单扣减库存（锁库存），这个很简单<br>先判断库存是否足够，然后扣减可销售库存，增加订单占用库存，然后再记录一个库存变动记录日志（作为凭证）</li>
-<li>贫血模型的设计<br>首先设计一个库存表 Stock，有如下字段<br><img src="https://user-images.githubusercontent.com/3287183/27028231-c1eac5d2-4f96-11e7-9dc5-60c1e36e43e4.png" alt="image"></li>
+<li><p>如果要实现ACID，需要依赖分布式事务2PC提交，2PC在JavaEE的JTA规范中有实现。</p>
+<p><img src="https://ws2.sinaimg.cn/large/006tKfTcgy1fhodhslo8mj30ky0cqq4c.jpg" alt="jta"></p>
+</li>
 </ul>
-<p>设计一个Stock对象(Getter和Setter省略)<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Stock</span> </span>&#123;</div><div class="line">	<span class="keyword">private</span> String spuId;</div><div class="line">	<span class="keyword">private</span> String skuId;</div><div class="line">	<span class="keyword">private</span> <span class="keyword">int</span> stockNum;</div><div class="line">	<span class="keyword">private</span> <span class="keyword">int</span> orderStockNum;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>  JTA控制器统一向三个服务发起prepare的请求，如果都确认，就可以同时事务提交（请注意这里订单一旦生成就已经是commited状态了）。提交过程中所有的资源是锁定等待中的，如果账务扣款慢了（比如银行接口反应慢了），资源就会一直等待锁定，直到事务超时为止，这样对系统资源的消耗是巨大的。</p>
 <ul>
-<li><p>Service入口<br>设计一个StockService，在其中的lock方法中写逻辑<br>入参为(spuId, skuId, num)<br>实现伪代码</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">count = select stocknum from stock where spuId=xx and skuid=xx</div><div class="line"><span class="keyword">if</span> count&gt;num &#123;</div><div class="line">     update stock set stocknum=stocknum-num, orderstocknum=orderstocknum+num  where skuId=xx and spuId=xx</div><div class="line">&#125; <span class="keyword">else</span> &#123;</div><div class="line">     <span class="comment">//库存不足，扣减失败</span></div><div class="line">&#125;</div><div class="line">insert stock_log set xx=xx, date= <span class="keyword">new</span> Date()</div></pre></td></tr></table></figure>
-</li>
-<li><p>ok，打完收工，如果做的好一些，可以把update和select count合一，这样可以利用一条语句完成自旋，解决并发问题（高手）。<br>小结一下：<br>有没有发现，在这个业务领域非常重要的核心逻辑 – 下订单扣减库存中操作过程中，<strong>Stock对象根本不用出现</strong>，全部是数据库操作SQL，所谓的业务逻辑就是由多条SQL构成。Stock只是CRUD的数据对象而已，没逻辑可言。</p>
-</li>
-<li><p>马丁福勒定义的“贫血模型”是反模式，面对简单的小系统用事务脚本方式开发没问题，业务逻辑复杂了，业务逻辑、各种状态散布在大量的函数中，维护扩展的成本一下子就上来，贫血模型没有实施微服务的基础。</p>
-</li>
-<li>虽然我们用Java这样的面向对象语言来开发，但是其实和过程型语言是一样的，所以很多情况下大家用数据库的存储过程来替代Java写逻辑反而效果会更好，（ps：用了Spring boot也不是微服务），</li>
-</ul>
-<h4 id="领域模型的开发模式"><a href="#领域模型的开发模式" class="headerlink" title="领域模型的开发模式"></a>领域模型的开发模式</h4><ul>
-<li>领域模型是将数据和行为封装在一起，并与现实世界的业务对象相映射。各类具备明确的职责划分，使得逻辑分散到合适对象中。这样的对象就是“充血模型”  。</li>
-<li>在具体实践中，我们需要明确一个概念，就是领域模型是有状态的，他代表一个实际存在的事物。还是接着上面的例子，我们设计Stock对象需要代表一种商品的实际库存，并在这个对象上面加上业务逻辑的方法<br><img src="https://user-images.githubusercontent.com/3287183/27028424-52b00316-4f97-11e7-83ca-fc3294c84743.png" alt="InventoryClass"></li>
-</ul>
-<p>这样做下单锁库存业务逻辑的时候，每次必须先从Repository根据主键load还原Inventory这个对象，然后执行对应的lock(num)方法改变这个Inventory对象的状态（属性也是状态的一种），然后再通过Repository的save方法把这个对象持久化到存储去。<br>完成上述一系列操作的是Application,Application对外提供了这种集成操作的接口</p>
-<p><img src="https://user-images.githubusercontent.com/3287183/27033547-62612bfe-4fac-11e7-880f-af651b7b7579.png" alt="image"><br>领域模型开发方法最重要的是把扣减造成的状态变化的细节放到了Inventory对象执行，这就是对业务逻辑的封装。<br>Application对象的lock方法可以和事务脚本方法的StockService的lock来做个对比，StockService是完全掌握所有细节，一旦有了变化（比如库存为0也可以扣减），Service方法要跟着变；而Application这种方式不需要变化，只要在Inventory对象内部计算就可以了。代码放到了合适的地方，计算在合适层次，一切都很合理。这种设计可以充分利用各种OOD、OOP的理论把业务逻辑实现的很漂亮。</p>
+<li><p>如果采用BASE事务</p>
+<p><img src="http://os8wjvykw.bkt.clouddn.com/2017-07-18-BASE.jpg" alt="BASE"></p>
+<p>​<br>BASE事务采用多段本地事务提交，将大事务拆为5个local transaction(T1-T5)，并为这些事务准备了冲正操作</p>
 <ul>
-<li>充血模型的缺点<br>从上面的例子，在Repository的load 到执行业务方法，再到save回去，这是需要耗费一定时间的，但是这个过程中如果多个线程同时请求对Inventory库存的锁定，那就会导致状态的不一致，麻烦的是针对库存的并发不仅难处理而且很常见。<br>贫血模型完全依靠数据库对并发的支撑，实现可以简化很多，但充血模型就得自己实现了，不管是在内存中通过锁对象，还是使用Redis的远程锁机制，都比贫血模型复杂而且可靠性下降，这是充血模型带来的挑战。更好的办法是可以通过事件驱动的架构来取消并发。<h4 id="领域模型和微服务的关系"><a href="#领域模型和微服务的关系" class="headerlink" title="领域模型和微服务的关系"></a>领域模型和微服务的关系</h4>上面讲了领域模型的实现，但是他和微服务是什么关系呢？在实践中，这个Inventory是一个限界上下文的聚合根，我们可以认为一个聚合根就是一个微服务进程。<br>不过问题又来了，一个库存的Inventory一定和商品信息是有关联的，仅仅靠Inventory中的冗余那点商品ID是不够的，商品的上下架状态等等都是业务逻辑需要的，那不是又把商品Sku这样的重型对象引入了这个微服务？两个重型的对象在一个服务中？这样的微服务拆不开啊，还是必须依靠商品库？！<br>请参考下一篇，通过事件驱动架构来完成领域间的松耦合。</li>
+<li><p>T1：Order服务先完成开启订单，订单状态Opened</p>
+</li>
+<li><p>T2：Inventory服务完成锁定库存</p>
+</li>
+<li><p>T3：Order服务变更订单状态为Prepared</p>
+</li>
+<li><p>T4：Account服务扣款</p>
+</li>
+<li><p>T5：Order服务变更订单状态为Committed</p>
+<p>其中每步完成都会提交事务。请注意这里的订单多了两个中间状态Opened和Prepared，最后才到Committed，对比ACID直接一步上Committed，BASE冗长了很多。<br>这样的优势是每段只锁定本地资源，对其他服务无影响，应付那种超时的情况需要的资源少。缺点是需要自己处理每个步骤失败的情况。和ACID相比，BASE不能轻易的回滚，只能通过补偿（Compensating）操作达到最终一致性。比如在T4扣款阶段，如果发现用户账户余额不足，交易失败。那么就要执行前三步的冲正操作(C3、C2、C1)</p>
+</li>
+<li><p>C3：将订单状态改为Opened</p>
+</li>
+<li><p>C2：将库存解锁</p>
+</li>
+<li><p>C1：将订单置为废弃状态 Cancelled</p>
+<blockquote>
+<p>注：这里的冲正的概念，英文术语是Compensating（补偿），和原来的事务回滚Roll back不一样，回滚是可以撤销变更回到原有的状态的，但是冲正类似发邮件，你发错了一封邮件，别人收到了错误邮件，你是无法撤回的。只能重新发一封邮件告诉别人：“对不起，刚才发错了，你就当没看见”。<br>ACID下如果库存或者余额不足，订单不会生成，直接回滚。BASE下即使最终订单失败取消，订单还是会生成，对世界的改变已经不可撤销了。    </p>
+</blockquote>
+</li>
 </ul>
-<h4 id="版权说明"><a href="#版权说明" class="headerlink" title="版权说明"></a>版权说明</h4><p>本文采用 CC BY 3.0 CN协议 进行许可。 可自由转载、引用，但需署名作者且注明文章出处。如转载至微信公众号，请在文末添加作者公众号二维码。</p>
-<h4 id="关注我"><a href="#关注我" class="headerlink" title="关注我"></a>关注我</h4><p>微信公众号<br><img src="https://user-images.githubusercontent.com/3287183/27618913-8ebf4766-5bf1-11e7-95ce-56055ad9effe.jpg" alt="qrcode_for_8"></p>
+</li>
+</ul>
+<p>ls</p>
+<h4 id="Saga特点"><a href="#Saga特点" class="headerlink" title="Saga特点"></a>Saga特点</h4><ul>
+<li><p>Saga Execution Coordinator(SEC)<br>我们有两种方式来处理Saga中的业务流程和失败补偿<br>做法一：让每个服务给后续步骤发送消息<br>做法二：通过一个统一的执行协调器来完成</p>
+<p>如果采用做法一，一旦有其中一个步骤失败，补偿操作非常麻烦，还会给模块带来不必要的耦合性，所以我们倾向于有一个统一的协调器来完成这个操作。<br><img src="http://os8wjvykw.bkt.clouddn.com/2017-07-18-SEC.jpg" alt="SEC"><br>从严格意义上来说，Saga本身是不包含业务逻辑的，Saga更倾向于“Process”而不是“Logic”。这里有人会不同意，我们订单流程里面那么多if else判断难道不是业务逻辑吗？其实这些if else正是需要根据业务步骤的处理结果来进行下一步，或者发起冲正操作。如果你用有限状态机来抽象，也不需要用If else了。Saga Execution Coordinator就是一个基于事件驱动的状态机的协调器。</p>
+</li>
+<li>多实例<br>有了状态就需要保存状态，SEC的每个实例只包含单个Saga的状态，这就意味着如果你有多个订单，就会启动多个SEC。</li>
+<li><p>Event Handling<br>SEC需要用到Event Handling机制。我们有两个选择，一个是创建一个上帝Event Handler，来分发执行所有的Event。另外一个就是让Saga的SEC实例自己来订阅属于自身的Event。第二个方案比较合适一些。</p>
+</li>
+<li><p>持久化<br>SEC的事务可能会持续很长时间，为了考虑停机重启等场景，我们会将Saga持久化</p>
+</li>
+</ul>
 
       
 
@@ -291,7 +306,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="http://s.jiathis.com/qrcode.php?url=http:joecao.github.io/2017/06/12/多研究些架构，少谈些框架（2）-微服务和充血模型/" alt="微信分享二维码">
+      <img src="http://s.jiathis.com/qrcode.php?url=http:joecao.github.io/2017/07/16/Design for Failure-Saga模式和消息驱动/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -305,18 +320,9 @@
   
 <nav id="article-nav">
   
-    <a href="/2017/06/23/多研究些架构，少谈些框架（3）- 微服务和事件驱动/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          (no title)
-        
-      </div>
-    </a>
   
-  
-    <a href="/2017/06/09/多研究些架构，少谈些框架（1）-论微服务架构的核心概念/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">多研究些架构，少谈些框架（1） -- 论微服务架构的核心概念</div>
+    <a href="/2017/06/29/[译]领域驱动设计和Spring/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">领域驱动设计和Spring</div>
       <i class="icon-circle-right"></i>
     </a>
   
