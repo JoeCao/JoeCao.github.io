@@ -27,7 +27,7 @@
 <meta property="og:image" content="https://user-images.githubusercontent.com/3287183/27023433-19fae0c0-4f85-11e7-8ea3-cd5669fdada7.png">
 <meta property="og:image" content="https://user-images.githubusercontent.com/3287183/27023442-2205624a-4f85-11e7-8a3b-6d54fe7db3ba.png">
 <meta property="og:image" content="https://user-images.githubusercontent.com/3287183/27618913-8ebf4766-5bf1-11e7-95ce-56055ad9effe.jpg">
-<meta property="og:updated_time" content="2017-06-28T03:28:41.000Z">
+<meta property="og:updated_time" content="2017-07-30T02:12:01.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="微服务之构建容错&amp;自动降级的系统">
 <meta name="twitter:description" content="微服务是什么MicroService主要是针对以前的Monolithic（单体）服务来说的，类似优步打车（Uber）这样的应用，如果使用Monolithic来架构，可能是这样的      注：STRIPE是支付服务SENDGRID是邮件推送服务TWILIO是语音、消息的云服务  大部分的项目都是由Monolithic起步的。刚开始最合适不过了，开发简单直接（直接在一个IDE里面就可以调试）、部署方">
@@ -194,14 +194,13 @@
 <p>注：<br>STRIPE是支付服务<br>SENDGRID是邮件推送服务<br>TWILIO是语音、消息的云服务</p>
 </blockquote>
 <p>大部分的项目都是由Monolithic起步的。刚开始最合适不过了，开发简单直接（直接在一个IDE里面就可以调试）、部署方便（搞个war包扔到tomcat里面就能跑）。<br>但是随着时间的增长，单体应用的缺陷暴露出来了。</p>
+<a id="more"></a> 
 <ul>
-<li>首先是代码量大大增加<br>从几千行到几十万行，接手的程序员已经无法搞清楚里面模块交互逻辑和依赖关系了。大家都在小心翼翼的加代码，避免触碰以前的旧代码。至于单元测试，这种怪兽级别的应用，能不能拆分出来单元啊？</li>
-<li>不可避免的超长启动时间<br>3分钟以内的都算是快的。启动后，程序员抽支烟再回来的不在少数。大量的时间在等待，使得程序员越来越不愿意测试自己的功能，写完了之后直接扔给测试就完事了。测试轮次一次又一次，时间不可避免的浪费。<ul>
-<li>部署扩展困难<br>各个模块对服务器的性能要求不同，有的占用CPU高，有的需要大量的IO，有的需要更多的内存。部署在一个服务器内相互影响，扩容的话，无法针对性的扩展。</li>
-</ul>
-</li>
-<li>单个的bug会损坏整个服务<br>可能一个模块的内存泄露，会使得整个服务都crash down。</li>
-<li>对于一些新技术尝试有限制<br>比如想换个新框架试试，但是要换就全部得换，风险太大。</li>
+<li>首先是代码量大大增加<br> 从几千行到几十万行，接手的程序员已经无法搞清楚里面模块交互逻辑和依赖关系了。大家都在小心翼翼的加代码，避免触碰以前的旧代码。至于单元测试，这种怪兽级别的应用，能不能拆分出来单元啊？</li>
+<li>不可避免的超长启动时间<br> 3分钟以内的都算是快的。启动后，程序员抽支烟再回来的不在少数。大量的时间在等待，使得程序员越来越不愿意测试自己的功能，写完了之后直接扔给测试就完事了。测试轮次一次又一次，时间不可避免的浪费。</li>
+<li>部署扩展困难<br> 各个模块对服务器的性能要求不同，有的占用CPU高，有的需要大量的IO，有的需要更多的内存。部署在一个服务器内相互影响，扩容的话，无法针对性的扩展。</li>
+<li>单个的bug会损坏整个服务<br> 可能一个模块的内存泄露，会使得整个服务都crash down。</li>
+<li>对于一些新技术尝试有限制<br> 比如想换个新框架试试，但是要换就全部得换，风险太大。</li>
 </ul>
 <h3 id="服务化的改造"><a href="#服务化的改造" class="headerlink" title="服务化的改造"></a>服务化的改造</h3><p>解决方案就是服务化，进行下图的Y轴方向的功能拆解。  </p>
 <p><img src="https://user-images.githubusercontent.com/3287183/27023297-84c009ea-4f84-11e7-95a9-23db2ad1f61f.png" alt="xyz"></p>

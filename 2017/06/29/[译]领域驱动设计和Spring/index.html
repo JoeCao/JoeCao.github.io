@@ -19,7 +19,7 @@
 <meta property="og:image" content="https://ws1.sinaimg.cn/large/006tKfTcgy1fh6t8vsycrj31kw0yjabl.jpg">
 <meta property="og:image" content="https://ws3.sinaimg.cn/large/006tKfTcgy1fh6tw0agfcj31kw0ycq58.jpg">
 <meta property="og:image" content="https://user-images.githubusercontent.com/3287183/27618913-8ebf4766-5bf1-11e7-95ce-56055ad9effe.jpg">
-<meta property="og:updated_time" content="2017-07-27T12:53:59.000Z">
+<meta property="og:updated_time" content="2017-07-30T01:44:10.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="领域驱动设计和Spring">
 <meta name="twitter:description" content="原文 http://static.olivergierke.de/lectures/ddd-and-spring/ 1、介绍这篇文章是的介绍一下领域驱动设计的基础构件、概念和Java的web应用（主要是基于Spring框架）之间的关系和区别。这篇文章的第二部分讲了怎么把实体、聚合根、仓储映射到使用Spring框架的Java应用中2、领域驱动设计Eric Evans的《领域驱动设计》无疑是软件设计领">
@@ -182,6 +182,7 @@
       
         <p>原文 <a href="http://static.olivergierke.de/lectures/ddd-and-spring/" target="_blank" rel="external">http://static.olivergierke.de/lectures/ddd-and-spring/</a></p>
 <p>1、<strong>介绍</strong><br>这篇文章是的介绍一下领域驱动设计的基础构件、概念和Java的web应用（主要是基于Spring框架）之间的关系和区别。<br>这篇文章的第二部分讲了怎么把实体、聚合根、仓储映射到使用Spring框架的Java应用中<br>2、领域驱动设计<br>Eric Evans的《领域驱动设计》无疑是软件设计领域最重要的几本书之一。<br>这本书主要集中在软件开发中如何处理领域和软件的映射关系— 开始强调领域通用语言(domain ubiquitous language)，通过语言来提取模型，最终映射到一个可工作的软件上。<br>我们已经对软件设计模式比较熟悉了，他是用于描述和提炼Class和Class关系的技术语言。而DDD是一种用于程序员和业务沟通的更通用的语言，使用DDD可以最终将代码映射到模型上。</p>
+<a id="more"></a>
 <p>2.1 基础构件<br>构件是DDD中的一些专有名词，让我们看一下图<br><img src="https://ws2.sinaimg.cn/large/006tKfTcgy1fh6t3fmnauj31kw154grh.jpg" alt="DDD的专有名词"></p>
 <p>2.1.1 限界上下文（Bounded Context)<br>当进行领域建模的时候，任何将其作为一个整体进行建模的尝试注定会失败。因为各类利益相关者和他们对领域的看法可能完全不同，试图建立一个单一的、独特的模型来满足所有需求是<strong>完全不可能</strong>的，会把系统搞得极为复杂。<br>让我们看一个示例图，这个图描述了销售领域已经识别出的模型<br><img src="https://ws1.sinaimg.cn/large/006tKfTcgy1fh6t73dzmsj31jn105dhn.jpg" alt="销售领域"></p>
 <p>我们把模型元素稍加区分，成为分离的模型，就可以看出客户和订单的，他们是不同上下文的核心的概念。<br><img src="https://ws1.sinaimg.cn/large/006tKfTcgy1fh6t8vsycrj31kw0yjabl.jpg" alt="区分"></p>
@@ -318,8 +319,8 @@
     </a>
   
   
-    <a href="/2017/06/23/多研究些架构，少谈些框架（3）- 微服务和事件驱动/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title"></div>
+    <a href="/2017/06/16/多研究些架构，少谈些框架（3）- 微服务和事件驱动/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">多研究些架构，少谈些框架（3）-- 微服务和事件驱动</div>
       <i class="icon-circle-right"></i>
     </a>
   

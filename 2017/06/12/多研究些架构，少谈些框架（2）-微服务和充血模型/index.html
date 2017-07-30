@@ -19,7 +19,7 @@
 <meta property="og:image" content="https://user-images.githubusercontent.com/3287183/27028424-52b00316-4f97-11e7-83ca-fc3294c84743.png">
 <meta property="og:image" content="https://user-images.githubusercontent.com/3287183/27033547-62612bfe-4fac-11e7-880f-af651b7b7579.png">
 <meta property="og:image" content="https://user-images.githubusercontent.com/3287183/27618913-8ebf4766-5bf1-11e7-95ce-56055ad9effe.jpg">
-<meta property="og:updated_time" content="2017-06-28T03:22:25.000Z">
+<meta property="og:updated_time" content="2017-07-30T01:45:09.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="多研究些架构，少谈些框架（2）-- 微服务和充血模型">
 <meta name="twitter:description" content="2017-6-12 曹祖鹏上篇我们聊了微服务的DDD之间的关系，很多人还是觉得很虚幻，DDD那么复杂的理论，聚合根、值对象、事件溯源，到底我们该怎么入手呢？实际上DDD和面向对象设计、设计模式等等理论有千丝万缕的联系，如果不熟悉OOA、OOD，DDD也是使用不好的。不过学习这些OO理论的时候，大家往往感觉到无用武之地，因为大部分的Java程序员开发生涯是从学习J2EE经典的分层理论开始的（Acti">
@@ -181,6 +181,7 @@
     <div class="article-entry" itemprop="articleBody">
       
         <p><em>2017-6-12 曹祖鹏</em><br>上篇我们聊了微服务的DDD之间的关系，很多人还是觉得很虚幻，DDD那么复杂的理论，聚合根、值对象、事件溯源，到底我们该怎么入手呢？<br>实际上DDD和面向对象设计、设计模式等等理论有千丝万缕的联系，如果不熟悉OOA、OOD，DDD也是使用不好的。不过学习这些OO理论的时候，大家往往感觉到无用武之地，因为大部分的Java程序员开发生涯是从学习J2EE经典的分层理论开始的（Action、Service、Dao），在这种分层理论中，我们基本没有啥机会使用那些所谓的“行为型”的设计模式，这里的核心原因，就是J2EE经典分层的开发方式是“贫血模型”。<br>Martin Fowler在他的《企业应用架构模式》这本书中提出了两种开发方式“事务脚本”和“领域模型”，这两种开发分别对应了“贫血模型”和“充血模型”。</p>
+<a id="more"></a>
 <h4 id="事务脚本开发模式"><a href="#事务脚本开发模式" class="headerlink" title="事务脚本开发模式"></a>事务脚本开发模式</h4><ul>
 <li>事务脚本的核心是过程，可以认为大部分的业务处理都是一条条的SQL，事务脚本把单个SQL组织成为一段业务逻辑，在逻辑执行的时候，使用事务来保证逻辑的ACID。最典型的就是存储过程。当然我们在平时J2EE经典分层架构中，经常在Service层使用事务脚本。<br><img src="https://user-images.githubusercontent.com/3287183/27027640-d534d6ca-4f94-11e7-95bf-1109105caf5b.jpg" alt="aa1"></li>
 </ul>
@@ -305,11 +306,11 @@
   
 <nav id="article-nav">
   
-    <a href="/2017/06/23/多研究些架构，少谈些框架（3）- 微服务和事件驱动/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2017/06/16/多研究些架构，少谈些框架（3）- 微服务和事件驱动/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
-          (no title)
+          多研究些架构，少谈些框架（3）-- 微服务和事件驱动
         
       </div>
     </a>

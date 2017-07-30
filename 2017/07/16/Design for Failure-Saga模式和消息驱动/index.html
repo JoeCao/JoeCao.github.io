@@ -17,7 +17,7 @@
 <meta property="og:image" content="https://ws2.sinaimg.cn/large/006tKfTcgy1fhodhslo8mj30ky0cqq4c.jpg">
 <meta property="og:image" content="http://os8wjvykw.bkt.clouddn.com/2017-07-18-BASE.jpg">
 <meta property="og:image" content="http://os8wjvykw.bkt.clouddn.com/2017-07-18-SEC.jpg">
-<meta property="og:updated_time" content="2017-07-27T12:52:16.000Z">
+<meta property="og:updated_time" content="2017-07-30T01:42:56.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Saga模式和事件驱动">
 <meta name="twitter:description" content="在领域驱动设计的实践中，我一直有个问题没想明白 – 领域聚合对象对于某一类事物的抽象是很准确的，比如库存、商品、会员，这个和现实生活中的能一一对应上。通过充血模型将数据和行为统一起来，很容易理解。但是类似订单、审批流程，这类逻辑一直没有很好的抽象方式。从内部状态看，他纯粹是个有限状态机，没啥特别的商业逻辑；从行为看，却发现他的所有状态变更，都是需要调用外部模块，并根据外部模块的返回结果，再确定迁越">
@@ -179,6 +179,7 @@
     <div class="article-entry" itemprop="articleBody">
       
         <p>在领域驱动设计的实践中，我一直有个问题没想明白 – 领域聚合对象对于某一类事物的抽象是很准确的，比如库存、商品、会员，这个和现实生活中的能一一对应上。通过充血模型将数据和行为统一起来，很容易理解。<br>但是类似订单、审批流程，这类逻辑一直没有很好的抽象方式。从内部状态看，他纯粹是个有限状态机，没啥特别的商业逻辑；从行为看，却发现他的所有状态变更，都是需要调用外部模块，并根据外部模块的返回结果，再确定迁越到哪个状态。这和我们以前充血模型中将行为控制在只修改本身状态的做法是相抵触的。<br>比如库存实体，不管是出库、入库、下单、发货、上架、下架，改变的只是库存商品的状态和数量，不涉及外部模块。<br>但是对比订单，它的下单、支付、发货、签收等需要支付、库存、配送模块一起配合返回结果，还要处理其他模块的各种各样的失败情况（库存不足，用户没钱支付、用户拒收等等）。<br>这就尴尬了，这样的实体聚合的方法必须依赖外部模块，耦合拆不开，系统不能<strong>自洽</strong>，它的开发、测试、部署上线都是麻烦的事情。<br>这个疑惑直到我了解Saga</p>
+<a id="more"></a>
 <h4 id="Saga是什么"><a href="#Saga是什么" class="headerlink" title="Saga是什么"></a>Saga是什么</h4><p>Saga是什么？Saga的定义是“长时间活动的事务”(Long Lived Transaction，后文简称为LLT)。他是普林斯顿大学HECTOR GARCIA-MOLINA教授在1987年的一篇关于分布式数据库的论文中提出来的概念。<br><a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.93.7258&amp;rep=rep1&amp;type=pdf" target="_blank" rel="external">Sagas论文</a></p>
 <p>Long Lived从字面意义上不清晰，Long到底意味着多长？事务持续时间是一个小时、一天甚至一周吗？其实都不是，有时候Saga事务时长甚至只有几秒钟，时间跨度并不重要。重要的是什么？关键的是跨系统的多次“事务”，Saga往往由多个外部子事务构成，需要通过多次外部系统的消息交互，才能将整体事务从开始迁移到结束状态，这和我们原来常见的在一个数据库的短事务不一样。比如一个旅行的订单，是由机票、旅馆、租车三个子订单构成，都需要外部的确认，缺任何一个步骤，不能成行，这就是一个典型的LLT。</p>
 <h4 id="ACID和BASE事务"><a href="#ACID和BASE事务" class="headerlink" title="ACID和BASE事务"></a>ACID和BASE事务</h4><p>相对于一般事务我们习惯ACID - 要么一起成功，要么一起失败。<br>但是LLT的话，直接ACID，消耗就太大了，想象一下在酒店人员确认房间信息前，我们前一个机票必须一直都处于占位锁定但不能确认出票的状态，机票供应商可不允许你这样玩。<br>所以Saga采用了BASE（Basic Availability, Soft, Eventual consistency）事务的方式，来避免消耗大量资源的同步、锁定。<br>举例：电商下单，需要冻结商品库存（将可销售库存-1，已销售库存+1），然后扣取用户的帐户余额 ，最终完成订单。 库存不足、帐户余额不足都将导致订单失败。这里库存和支付模块都是单独的服务，有自己的数据存储。</p>
