@@ -6,14 +6,18 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="joecao.github.io">
-  <title>曹祖鹏的Blog</title>
+  <title>提高订单并发抓取效率的方法-通过redis实现分布式无锁算法 | 曹祖鹏的Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="曹祖鹏的Blog">
-<meta property="og:url" content="joecao.github.io/index.html">
+  <meta name="description" content="背景业务场景经常出现多个外部应用同时来获取订单的情况，谁先抢到订单先处理，但是如果让这些外挂获取了相同的订单，损失就大了。 目前的办法是让外部应用都同时获取一批订单记录，再到数据库一条条的update记录的处理人的字段（每次update都会单独启动事务，而不是把所有的update放到一个事务里面），如果update成功，那就可以处理这个订单，如果update失败，说明订单已经被其他程序取走处理。这">
+<meta property="og:type" content="article">
+<meta property="og:title" content="提高订单并发抓取效率的方法-通过redis实现分布式无锁算法">
+<meta property="og:url" content="joecao.github.io/2012/08/30/提高订单并发抓取效率的方法-通过redis实现分布式无锁算法/index.html">
 <meta property="og:site_name" content="曹祖鹏的Blog">
+<meta property="og:description" content="背景业务场景经常出现多个外部应用同时来获取订单的情况，谁先抢到订单先处理，但是如果让这些外挂获取了相同的订单，损失就大了。 目前的办法是让外部应用都同时获取一批订单记录，再到数据库一条条的update记录的处理人的字段（每次update都会单独启动事务，而不是把所有的update放到一个事务里面），如果update成功，那就可以处理这个订单，如果update失败，说明订单已经被其他程序取走处理。这">
+<meta property="og:updated_time" content="2017-08-15T06:17:05.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="曹祖鹏的Blog">
+<meta name="twitter:title" content="提高订单并发抓取效率的方法-通过redis实现分布式无锁算法">
+<meta name="twitter:description" content="背景业务场景经常出现多个外部应用同时来获取订单的情况，谁先抢到订单先处理，但是如果让这些外挂获取了相同的订单，损失就大了。 目前的办法是让外部应用都同时获取一批订单记录，再到数据库一条条的update记录的处理人的字段（每次update都会单独启动事务，而不是把所有的update放到一个事务里面），如果update成功，那就可以处理这个订单，如果update失败，说明订单已经被其他程序取走处理。这">
   
     <link rel="alternative" href="/atom.xml" title="曹祖鹏的Blog" type="application/atom+xml">
   
@@ -150,388 +154,14 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-    <article id="post-Design for Failure-Saga模式和消息驱动" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+            <article id="post-提高订单并发抓取效率的方法-通过redis实现分布式无锁算法" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/07/16/Design for Failure-Saga模式和消息驱动/">Saga模式和事件驱动</a>
-    </h1>
-  
-
-        
-        <a href="/2017/07/16/Design for Failure-Saga模式和消息驱动/" class="archive-article-date">
-  	<time datetime="2017-07-16T12:46:25.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-07-16</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>在领域驱动设计的实践中，我一直有个问题没想明白 – 领域聚合对象对于某一类事物的抽象是很准确的，比如库存、商品、会员，这个和现实生活中的能一一对应上。通过充血模型将数据和行为统一起来，很容易理解。<br>但是类似订单、审批流程，这类逻辑一直没有很好的抽象方式。从内部状态看，他纯粹是个有限状态机，没啥特别的商业逻辑；从行为看，却发现他的所有状态变更，都是需要调用外部模块，并根据外部模块的返回结果，再确定迁越到哪个状态。这和我们以前充血模型中将行为控制在只修改本身状态的做法是相抵触的。<br>比如库存实体，不管是出库、入库、下单、发货、上架、下架，改变的只是库存商品的状态和数量，不涉及外部模块。<br>但是对比订单，它的下单、支付、发货、签收等需要支付、库存、配送模块一起配合返回结果，还要处理其他模块的各种各样的失败情况（库存不足，用户没钱支付、用户拒收等等）。<br>这就尴尬了，这样的实体聚合的方法必须依赖外部模块，耦合拆不开，系统不能<strong>自洽</strong>，它的开发、测试、部署上线都是麻烦的事情。<br>这个疑惑直到我了解Saga</p>
-        
-          <a class="article-more-a" href="/2017/07/16/Design for Failure-Saga模式和消息驱动/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2017/07/16/Design for Failure-Saga模式和消息驱动/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
-  
-    <article id="post-[译]领域驱动设计和Spring" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/06/29/[译]领域驱动设计和Spring/">领域驱动设计和Spring</a>
-    </h1>
-  
-
-        
-        <a href="/2017/06/29/[译]领域驱动设计和Spring/" class="archive-article-date">
-  	<time datetime="2017-06-29T12:46:25.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-06-29</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>原文 <a href="http://static.olivergierke.de/lectures/ddd-and-spring/" target="_blank" rel="external">http://static.olivergierke.de/lectures/ddd-and-spring/</a></p>
-<p>1、<strong>介绍</strong><br>这篇文章是的介绍一下领域驱动设计的基础构件、概念和Java的web应用（主要是基于Spring框架）之间的关系和区别。<br>这篇文章的第二部分讲了怎么把实体、聚合根、仓储映射到使用Spring框架的Java应用中<br>2、领域驱动设计<br>Eric Evans的《领域驱动设计》无疑是软件设计领域最重要的几本书之一。<br>这本书主要集中在软件开发中如何处理领域和软件的映射关系— 开始强调领域通用语言(domain ubiquitous language)，通过语言来提取模型，最终映射到一个可工作的软件上。<br>我们已经对软件设计模式比较熟悉了，他是用于描述和提炼Class和Class关系的技术语言。而DDD是一种用于程序员和业务沟通的更通用的语言，使用DDD可以最终将代码映射到模型上。</p>
-        
-          <a class="article-more-a" href="/2017/06/29/[译]领域驱动设计和Spring/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2017/06/29/[译]领域驱动设计和Spring/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
-  
-    <article id="post-多研究些架构，少谈些框架（3）- 微服务和事件驱动" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/06/16/多研究些架构，少谈些框架（3）- 微服务和事件驱动/">多研究些架构，少谈些框架（3）-- 微服务和事件驱动</a>
-    </h1>
-  
-
-        
-        <a href="/2017/06/16/多研究些架构，少谈些框架（3）- 微服务和事件驱动/" class="archive-article-date">
-  	<time datetime="2017-06-16T10:00:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-06-16</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p><em>2017-6-16 曹祖鹏</em></p>
-<p>接上篇，我们采用了领域驱动的开发方式，使用了充血模型，享受了他的好处，但是也不得不面对他带来的弊端。这个弊端在分布式的微服务架构下面又被放大。</p>
-<h4 id="事务一致性"><a href="#事务一致性" class="headerlink" title="事务一致性"></a>事务一致性</h4><p>事务一致性的问题在Monolithic下面不是大问题，在微服务下面却是很致命，我们回顾一下所谓的ACID原则</p>
-<ul>
-<li>Atomicity - 原子性，改变数据状态要么是一起完成，要么一起失败</li>
-<li>Consistency - 一致性，数据的状态是完整一致的</li>
-<li>Isolation - 隔离线，即使有并发事务，互相之间也不影响</li>
-<li>Durability - 持久性， 一旦事务提交，不可撤销</li>
-</ul>
-        
-          <a class="article-more-a" href="/2017/06/16/多研究些架构，少谈些框架（3）- 微服务和事件驱动/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2017/06/16/多研究些架构，少谈些框架（3）- 微服务和事件驱动/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
-  
-    <article id="post-多研究些架构，少谈些框架（2）-微服务和充血模型" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/06/12/多研究些架构，少谈些框架（2）-微服务和充血模型/">多研究些架构，少谈些框架（2）-- 微服务和充血模型</a>
-    </h1>
-  
-
-        
-        <a href="/2017/06/12/多研究些架构，少谈些框架（2）-微服务和充血模型/" class="archive-article-date">
-  	<time datetime="2017-06-12T07:00:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-06-12</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p><em>2017-6-12 曹祖鹏</em><br>上篇我们聊了微服务的DDD之间的关系，很多人还是觉得很虚幻，DDD那么复杂的理论，聚合根、值对象、事件溯源，到底我们该怎么入手呢？<br>实际上DDD和面向对象设计、设计模式等等理论有千丝万缕的联系，如果不熟悉OOA、OOD，DDD也是使用不好的。不过学习这些OO理论的时候，大家往往感觉到无用武之地，因为大部分的Java程序员开发生涯是从学习J2EE经典的分层理论开始的（Action、Service、Dao），在这种分层理论中，我们基本没有啥机会使用那些所谓的“行为型”的设计模式，这里的核心原因，就是J2EE经典分层的开发方式是“贫血模型”。<br>Martin Fowler在他的《企业应用架构模式》这本书中提出了两种开发方式“事务脚本”和“领域模型”，这两种开发分别对应了“贫血模型”和“充血模型”。</p>
-        
-          <a class="article-more-a" href="/2017/06/12/多研究些架构，少谈些框架（2）-微服务和充血模型/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2017/06/12/多研究些架构，少谈些框架（2）-微服务和充血模型/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
-  
-    <article id="post-多研究些架构，少谈些框架（1）-论微服务架构的核心概念" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/06/09/多研究些架构，少谈些框架（1）-论微服务架构的核心概念/">多研究些架构，少谈些框架（1） -- 论微服务架构的核心概念</a>
-    </h1>
-  
-
-        
-        <a href="/2017/06/09/多研究些架构，少谈些框架（1）-论微服务架构的核心概念/" class="archive-article-date">
-  	<time datetime="2017-06-09T07:00:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-06-09</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p><em>2017-6-9 曹祖鹏</em></p>
-<h4 id="微服务架构和SOA区别"><a href="#微服务架构和SOA区别" class="headerlink" title="微服务架构和SOA区别"></a>微服务架构和SOA区别</h4><p>微服务现在辣么火，业界流行的对比的却都是所谓的Monolithic单体应用，而大量的系统在十几年前都是已经是分布式系统了，那么微服务作为新的理念和原来的分布式系统，或者说SOA（面向服务架构）是什么区别呢？  </p>
-        
-          <a class="article-more-a" href="/2017/06/09/多研究些架构，少谈些框架（1）-论微服务架构的核心概念/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2017/06/09/多研究些架构，少谈些框架（1）-论微服务架构的核心概念/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
-  
-    <article id="post-微服务之构建容错和自动降级的系统" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/11/09/微服务之构建容错和自动降级的系统/">微服务之构建容错&amp;自动降级的系统</a>
-    </h1>
-  
-
-        
-        <a href="/2016/11/09/微服务之构建容错和自动降级的系统/" class="archive-article-date">
-  	<time datetime="2016-11-09T12:46:25.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2016-11-09</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="微服务是什么"><a href="#微服务是什么" class="headerlink" title="微服务是什么"></a>微服务是什么</h3><p>MicroService主要是针对以前的Monolithic（单体）服务来说的，类似优步打车（Uber）这样的应用，如果使用Monolithic来架构，可能是这样的   </p>
-<p><img src="https://user-images.githubusercontent.com/3287183/27023280-756b952c-4f84-11e7-8c76-248145788f7e.png" alt="graph-01-e1431978090737"></p>
-<blockquote>
-<p>注：<br>STRIPE是支付服务<br>SENDGRID是邮件推送服务<br>TWILIO是语音、消息的云服务</p>
-</blockquote>
-<p>大部分的项目都是由Monolithic起步的。刚开始最合适不过了，开发简单直接（直接在一个IDE里面就可以调试）、部署方便（搞个war包扔到tomcat里面就能跑）。<br>但是随着时间的增长，单体应用的缺陷暴露出来了。</p>
-        
-          <a class="article-more-a" href="/2016/11/09/微服务之构建容错和自动降级的系统/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2016/11/09/微服务之构建容错和自动降级的系统/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
-  
-    <article id="post-一次惨痛的宕机教训" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2013/03/01/一次惨痛的宕机教训/">一个参数引发的惨案</a>
-    </h1>
-  
-
-        
-        <a href="/2013/03/01/一次惨痛的宕机教训/" class="archive-article-date">
-  	<time datetime="2013-03-01T10:00:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2013-03-01</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h4 id="事情经过"><a href="#事情经过" class="headerlink" title="事情经过"></a>事情经过</h4><p>2月1号上午10点</p>
-<p>sales api应用在70网段的104服务器 的dubbo thread线程池 满了，主数据库maindb、商品数据库itemdb连接池都占满，紧急重启后一分钟，线程池、连接池还是占满，重启了2次还是这个情况，只得应用关闭。</p>
-<p>下午3点</p>
-<p>sales api在66网段所有应用的线程池、连接池全满。重启后依旧，不断重启了20分钟左右，只得放弃，随后暂时关闭前端的sales web的正式环境，只保留灰度环境，然后再启动sales api，这次终于成功启动了，但是后台应用还是不断的出现线程满的情况，直到4点15分暂时恢复正常。</p>
-<p>下午5点50分</p>
-<p>又出现所有应用线程池、连接池 全满，临时增加了sales api的应用负载到5个，未解决问题。增加主数据库和查询库连接池连接上限到100个, 仍然无效。同时DBA报告商品数据库的压力一直在16左右，即cpu在100%，业务一直处于瘫痪中</p>
-<p>下午6点50分</p>
-<p>DBA发现一个查询最频繁，同时耗cpu较高的sql，关闭了这个sql的接口，只保留灰度环境上的这个功能。这时商品库的压力下降到30％左右。此时，70网段的131号的sales api负载cpu较高，导致thread满。重启无效，遂关闭。</p>
-        
-          <a class="article-more-a" href="/2013/03/01/一次惨痛的宕机教训/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2013/03/01/一次惨痛的宕机教训/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
-  
-    <article id="post-提高订单并发抓取效率的方法-通过redis实现分布式无锁算法" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2012/08/30/提高订单并发抓取效率的方法-通过redis实现分布式无锁算法/">提高订单并发抓取效率的方法-通过redis实现分布式无锁算法</a>
+    <h1 class="article-title" itemprop="name">
+      提高订单并发抓取效率的方法-通过redis实现分布式无锁算法
     </h1>
   
 
@@ -551,11 +181,67 @@
 <li>大部分情况下外部应用读取各自的订单，只有少部分程序存在竞争关系，并发竞争的几率很小。但是这样不管是不是冲突，都是一条条update，浪费了大量的时间。</li>
 <li>大量并发的insert、update、query，使得订单表成为热表，锁消耗了数据库最多的性能。</li>
 </ul>
-        
-          <a class="article-more-a" href="/2012/08/30/提高订单并发抓取效率的方法-通过redis实现分布式无锁算法/#more">more >></a>
-        
+<a id="more"></a>
+<p>优化的策略</p>
+<ul>
+<li>将锁从数据库独立出来，不占用数据库宝贵的资源</li>
+<li>避免多个线程进入读取，这样保证读出来是不重复的订单</li>
+<li>锁分离策略，以SupCode和TplId构成一个锁，在读取EsupCode和模板Id相同的订单时才会遇到竞争的条件，缩小了锁的范围，提升性能。</li>
+<li>采用无锁定算法，如果并发时线程获取不到锁，线程可以决定是重试还是做其他的操作，不会阻塞在获取锁定的代码上，这样可以有效的增加吞吐量</li>
+<li>因为并发的几率较小，可以采用乐观锁策略，如果在读写过程中发现了其他线程的变更，就整体失败。</li>
+</ul>
+<h4 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h4><p>下面介绍一个通过Redis实现一个轻量级的Lock-Free分布式锁</p>
+<p>Redis在使用手册上介绍了一个可以通过SetNX、GetAndSet命令实现的分布式锁的办法，不幸的是这个算法有缺陷，很有可能导致锁失效。</p>
+<p>下面是伪代码的描述<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//尝试获取锁</span></div><div class="line">String object = get(lockKey)</div><div class="line"><span class="comment">//如果取到的值为空，说明这时没有线程持有这个锁</span></div><div class="line"><span class="keyword">if</span>  (object==<span class="keyword">null</span>) &#123;</div><div class="line">    <span class="comment">//将锁的lockKey的值修改为自己的事务id</span></div><div class="line">    <span class="comment">//后续进来的get操作就会取到事务Id，而认为已经被锁定</span></div><div class="line">    setNX(lockKey,transactionId,timout);</div><div class="line">    <span class="comment">// set运行完毕，就已经获取了锁</span></div><div class="line">&#125; <span class="keyword">else</span> &#123;</div><div class="line">    <span class="comment">// 如果没有获取到锁，直接返回。线程可以隔段时间继续尝试或者做其他的操作</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>这个算法逻辑上没有问题，但是在并发情况下有致命的缺陷</p>
+<p>因为get和 set指令不是原子执行的。在get之后，很可能值又被其他线程修改了。此时再去set，就会出现多个线程得到锁的情况</p>
+<p>那么Redis有没有提供在一个原子操作中既完成get和set的操作呢？目前是没有的，但是Redis提供了一组watch、multi指令，来进行类似的操作。</p>
+<p>Multi指令用来执行一组的命令，在执行过程中不会为另一个客户端发起的请求提供服务的。这保证了命令以原子操作的方式被执行。类似数据库的事务机制。但是这个multi实际上是批量操作，如果在其中执行get命令是没有返回的。所以get这类命令不能放到事务中执行。</p>
+<p>但是这样就会导致get和multi操作有被打断的危险。</p>
+<p>此时，Redis提供了Watch指令。使用说明上这样描述的</p>
+<p>监视一个(或多个) key ，如果在事务执行之前这个(或这些) key 被其他命令所改动，那么事务将被打断。</p>
+<p>就是说如果在执行multi之前如果变量被修改，multi中的命令就都不会执行成功。</p>
+<p>有了这些指令，我们get和set的原子性问题就可以解决。我们可以watch这个锁的Key，然后用multi执行set操作。之间如果被其他线程抢了先，后一步的set是不会成功的。</p>
+<p>下面是伪代码的描述<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//监控锁定Key</span></div><div class="line">watch(lockKey)</div><div class="line"><span class="comment">//尝试获取锁</span></div><div class="line">String object = get(lockKey)</div><div class="line"><span class="comment">//如果锁为空，说明此时没有线程持有该锁</span></div><div class="line"><span class="keyword">if</span>(object == <span class="keyword">null</span>) &#123;</div><div class="line">    <span class="comment">//开始启动事务</span></div><div class="line">    multi();</div><div class="line">    <span class="comment">//将set命令加入到事务中</span></div><div class="line">    setNX(lockKey, transactionId, timout);</div><div class="line">    <span class="comment">//批量执行指令，结束事务</span></div><div class="line">    exec();</div><div class="line">    <span class="comment">//如果这里还没有出错，说明该线程已经成功拿到了锁</span></div><div class="line">&#125; <span class="keyword">else</span> &#123;</div><div class="line">    <span class="comment">//如果已经被锁了，退出监控。</span></div><div class="line">    unwatch();</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>释放锁很简单，只要在最后执行完逻辑后，将lock从redis中删除即可。为了保证不出现死锁的情况，避免单个线程长时间占用锁，我们使用timeout时间，超过时间，lock会被redis自动删除而释放。</p>
+<p>假设A线程占用了锁30秒，还是没有结束，Redis清空了锁key所在的变量，此时线程B会进来获取锁，将自己的TransactionId设置在锁上。</p>
+<p>但是需要考虑一个情况，万一A线程在36秒的时候终于结束了自己的操作，在他退出时候，又把lock删除了，那么B的锁就会失效了。这样就会造成严重的问题。</p>
+<p>所以我们设置了一个transactionId的变量，各个线程用来识别是否是自己的事务。线程A退出时必须取出锁的值，判断当前的锁中的transactionId是否是自己的，如果不是，则说明事务超时，该锁已经被其他线程获取，直接退出，什么都不做。</p>
+<p>请注意，取出锁的值和删除锁对象这两个操作还不是原子的，所以还是有必要让watch、multi上场。</p>
+<p>下面是伪代码描述<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//监控锁的key</span></div><div class="line">watch(lockKey)</div><div class="line">String transactionId= get(lockKey)</div><div class="line"><span class="comment">//如果取出的事务Id和自己持有的Id相同，说明事务是正常结束</span></div><div class="line"><span class="keyword">if</span>(OwnTransactionId.equals(transactionId)) &#123;</div><div class="line">    multi();</div><div class="line">    delete(lockKey);</div><div class="line">    exec();</div><div class="line">&#125; <span class="keyword">else</span> &#123;</div><div class="line">    <span class="comment">//事务超时，已经被其他线程锁定，退出</span></div><div class="line">    unwatch();</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>有了锁定和解锁的方法，我们的客户端，在需要获取订单的地方使用锁定，避免其他的线程进入查询。如果没有获得锁，直接返回。在查询完毕后，解锁。</p>
+<p>这个操作的场景完全符合template的设计模式，我们参考了JdbcTemplate的设计，设计了一个ExecuteTemplate，专门用于处理锁定和解锁的操作，用户的查询操作放到了回调的内部类中。</p>
+<p>参考的代码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> java.util.List;</div><div class="line"><span class="keyword">import</span> java.util.concurrent.TimeUnit;</div><div class="line"></div><div class="line"><span class="keyword">import</span> org.slf4j.Logger;</div><div class="line"><span class="keyword">import</span> org.slf4j.LoggerFactory;</div><div class="line"><span class="keyword">import</span> org.springframework.dao.DataAccessException;</div><div class="line"><span class="keyword">import</span> org.springframework.data.redis.core.RedisOperations;</div><div class="line"><span class="keyword">import</span> org.springframework.data.redis.core.SessionCallback;</div><div class="line"><span class="keyword">import</span> org.springframework.data.redis.core.StringRedisTemplate;</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ExecuteTemplate</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> StringRedisTemplate redisTemplate;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">long</span> timeout = <span class="number">3000L</span>;</div><div class="line">    <span class="keyword">protected</span> <span class="keyword">static</span> <span class="keyword">final</span> Logger logger = LoggerFactory</div><div class="line">            .getLogger(ExecuteTemplate.class);</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * 执行方法将在以lock为key的锁对象上互斥</div><div class="line">     * </div><div class="line">     * <span class="doctag">@param</span> lock</div><div class="line">     *            Redis中的锁对象的key</div><div class="line">     * <span class="doctag">@param</span> executor</div><div class="line">     *            执行的回调方法，可以在内部进行其他的操作</div><div class="line">     * <span class="doctag">@return</span> 返回方法是否被执行，</div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">run</span><span class="params">(String lock, ExecuteWithLock executor)</span> </span>&#123;</div><div class="line">        <span class="comment">// 先获取锁对象，避免其他的线程取到相同的记录</span></div><div class="line">        String transactionId = String.valueOf(System.nanoTime());</div><div class="line">        <span class="keyword">boolean</span> fetched = fetchLock(lock, transactionId);</div><div class="line">        <span class="comment">// 如果获取到，则查询、返回数据，并释放锁返回</span></div><div class="line">        <span class="keyword">if</span> (fetched) &#123;</div><div class="line">            <span class="keyword">try</span> &#123;</div><div class="line">                executor.execute();</div><div class="line">            &#125; <span class="keyword">catch</span> (Exception e) &#123;</div><div class="line">                e.printStackTrace();</div><div class="line">            &#125; <span class="keyword">finally</span> &#123;</div><div class="line">                releaseLock(lock, transactionId);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> fetched;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * 申请标识为lock的锁对象</div><div class="line">     * </div><div class="line">     * <span class="doctag">@param</span> lock</div><div class="line">     * <span class="doctag">@return</span> 如果没有获取到，将返回false</div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">boolean</span> <span class="title">fetchLock</span><span class="params">(<span class="keyword">final</span> String lock, <span class="keyword">final</span> String transactionId)</span> </span>&#123;</div><div class="line"></div><div class="line">        <span class="keyword">boolean</span> fetched = redisTemplate.execute(<span class="keyword">new</span> SessionCallback&lt;Boolean&gt;() &#123;</div><div class="line">            <span class="meta">@SuppressWarnings</span>(<span class="string">"unchecked"</span>)</div><div class="line">            <span class="meta">@Override</span></div><div class="line">            <span class="function"><span class="keyword">public</span> Boolean <span class="title">execute</span><span class="params">(RedisOperations operations)</span></span></div><div class="line">                    <span class="keyword">throws</span> DataAccessException &#123;</div><div class="line">                <span class="comment">// 监控变量是否被改变</span></div><div class="line">                operations.watch(lock);</div><div class="line">                <span class="keyword">if</span> (operations.hasKey(lock)) &#123;</div><div class="line">                    logger.debug(<span class="string">"有其他事务在运行中"</span>);</div><div class="line">                    operations.unwatch();</div><div class="line">                    <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">                &#125; <span class="keyword">else</span> &#123;</div><div class="line">                    <span class="comment">// 启动批量操作，目的是为了后续的exec的执行</span></div><div class="line">                    logger.debug(<span class="string">"开始获取锁"</span>);</div><div class="line">                    operations.multi();</div><div class="line">                    <span class="comment">// 注意，这里的set方式实际使用的是setNX命令，</span></div><div class="line">                    <span class="comment">// 因为只有这个命令可以同时将值和超时时间原子的插入</span></div><div class="line">                    operations.opsForValue().set(lock, transactionId, timeout,</div><div class="line">                            TimeUnit.MILLISECONDS);</div><div class="line">                    List&lt;Object&gt; ret = operations.exec();</div><div class="line">                    <span class="keyword">if</span> (ret == <span class="keyword">null</span>) &#123;</div><div class="line">                        logger.debug(<span class="string">"锁对象被修改，获取失败"</span>);</div><div class="line">                        <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">                    &#125; <span class="keyword">else</span> &#123;</div><div class="line">                        logger.debug(<span class="string">"获取锁成功 &#123;&#125;"</span> , ret);</div><div class="line">                        <span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">                    &#125;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line"></div><div class="line">        &#125;);</div><div class="line">        <span class="keyword">return</span> fetched;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * 释放锁对象</div><div class="line">     * </div><div class="line">     * <span class="doctag">@param</span> lock</div><div class="line">     *            释放的锁对象标识</div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">releaseLock</span><span class="params">(<span class="keyword">final</span> String lock, <span class="keyword">final</span> String transactionId)</span> </span>&#123;</div><div class="line"></div><div class="line">        redisTemplate.execute(<span class="keyword">new</span> SessionCallback&lt;Boolean&gt;() &#123;</div><div class="line">            <span class="meta">@SuppressWarnings</span>(<span class="string">"unchecked"</span>)</div><div class="line">            <span class="meta">@Override</span></div><div class="line">            <span class="function"><span class="keyword">public</span> Boolean <span class="title">execute</span><span class="params">(RedisOperations operations)</span></span></div><div class="line">                    <span class="keyword">throws</span> DataAccessException &#123;</div><div class="line">                operations.watch(lock);</div><div class="line">                Object tid = operations.opsForValue().get(lock);</div><div class="line">                <span class="comment">// 判断当前的事务是否还是自己的事务</span></div><div class="line">                <span class="keyword">if</span> (transactionId.equals(String.valueOf(tid))) &#123;</div><div class="line">                    <span class="comment">// 如果是，删除锁</span></div><div class="line">                    logger.debug(<span class="string">"删除锁"</span>);</div><div class="line">                    operations.multi();</div><div class="line">                    operations.delete(lock);</div><div class="line">                    operations.exec();</div><div class="line">                &#125; <span class="keyword">else</span> &#123;</div><div class="line">                    <span class="comment">// 已超时</span></div><div class="line">                    logger.debug(<span class="string">"锁已经超时不存在"</span>);</div><div class="line">                    operations.unwatch();</div><div class="line">                &#125;</div><div class="line">                <span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">            &#125;</div><div class="line">        &#125;);</div><div class="line">        <span class="comment">// 如果已经超时，这个锁对象将被其他线程获取删除</span></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> StringRedisTemplate <span class="title">getRedisTemplate</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> redisTemplate;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setRedisTemplate</span><span class="params">(StringRedisTemplate redisTemplate)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.redisTemplate = redisTemplate;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setTimeout</span><span class="params">(<span class="keyword">long</span> timeout)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.timeout = timeout;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>设计一个回调接口ExecuteWithLock</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">ExecuteWithLock</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">void</span> <span class="title">execute</span><span class="params">()</span></span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>然后业务中可以方便的使用该接口来完成锁定的业务逻辑（这里使用了redis模拟了从数据库获取订单）</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * 查询某个supCode+tpl下的订单。supCode+tpl相同时， 并发查询的时候会加上锁，避免取到同样的记录</div><div class="line"> * </div><div class="line"> * <span class="doctag">@param</span> supCode</div><div class="line"> * <span class="doctag">@param</span> tplId</div><div class="line"> * <span class="doctag">@param</span> fetchSize</div><div class="line"> * <span class="doctag">@return</span></div><div class="line"> */</div><div class="line"><span class="function"><span class="keyword">public</span> List&lt;OrderInfo&gt; <span class="title">queryOrder</span><span class="params">(String supCode, String tplId,</span></span></div><div class="line">        <span class="keyword">final</span> <span class="keyword">int</span> fetchSize) &#123;</div><div class="line">    <span class="keyword">final</span> String key = buildKey(supCode, tplId);</div><div class="line">    <span class="keyword">final</span> String hash = buildHashKey(supCode, tplId);</div><div class="line">    <span class="comment">// 以supCode+tplId为互斥锁，</span></div><div class="line">    String lockObject = buildLock(supCode, tplId);</div><div class="line">    <span class="keyword">final</span> List&lt;OrderInfo&gt; resultList = <span class="keyword">new</span> ArrayList&lt;OrderInfo&gt;();</div><div class="line">    template.run(lockObject, <span class="keyword">new</span> ExecuteWithLock() &#123;</div><div class="line"></div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">execute</span><span class="params">()</span> </span>&#123;</div><div class="line">            <span class="comment">//使用redis的list存放的order列表</span></div><div class="line">            <span class="keyword">long</span> listSize = redisTemplate.opsForList().size(key);</div><div class="line">            <span class="keyword">long</span> size = listSize &gt; fetchSize ? fetchSize : listSize;</div><div class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; size; i++) &#123;</div><div class="line">                String orderId = redisTemplate.opsForList().rightPop(key);</div><div class="line">                Object objectStr = redisTemplate.opsForHash().get(hash,</div><div class="line">                        orderId);</div><div class="line">                <span class="comment">// System.out.println(objectStr);</span></div><div class="line">                OrderInfo orderInfo = JSON.parseObject(</div><div class="line">                        String.valueOf(objectStr), OrderInfo.class);</div><div class="line">                resultList.add(orderInfo);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;);</div><div class="line">    <span class="keyword">return</span> resultList;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>以上命令、代码在redis2.4中测试通过</p>
+
       
 
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
       
     </div>
     <div class="article-info article-info-index">
@@ -564,22 +250,89 @@
       
 
       
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2012/08/30/提高订单并发抓取效率的方法-通过redis实现分布式无锁算法/">展开全文 >></a>
-        </p>
-      
 
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
+        </div>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="http://s.jiathis.com/qrcode.php?url=http:joecao.github.io/2012/08/30/提高订单并发抓取效率的方法-通过redis实现分布式无锁算法/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
       
       <div class="clearfix"></div>
     </div>
   </div>
 </article>
 
+  
+<nav id="article-nav">
+  
+    <a href="/2013/03/01/一次惨痛的宕机教训/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          一个参数引发的惨案
+        
+      </div>
+    </a>
+  
+  
+</nav>
+
 
 
 
 
   
+  
+  
+
+  
+
   
 
 
@@ -608,8 +361,8 @@
     <script>
 	var yiliaConfig = {
 		mathjax: false,
-		isHome: true,
-		isPost: false,
+		isHome: false,
+		isPost: true,
 		isArchive: false,
 		isTag: false,
 		isCategory: false,
