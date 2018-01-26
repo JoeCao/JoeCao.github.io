@@ -6,14 +6,22 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="joecao.github.io">
-  <title>曹祖鹏的Blog</title>
+  <title>比特币UTXO和去中心化系统的设计 | 曹祖鹏的Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="曹祖鹏的Blog">
-<meta property="og:url" content="joecao.github.io/index.html">
+  <meta name="description" content="2018-01-26 曹祖鹏 起因刚进2018年，区块链突然大火，程序员们可能莫名其妙，不就是一个分布式系统么，怎么突然就要改变互联网了？趁着这个东风，我们了解一些区块链基础知识。看看是否可以改变世界。 UTXO是什么UTXO是Unspent Transaction Output（未消费交易输出）简写。这绝对是比特币的非常特殊的地方，理解UTXO也就理解了比特币去中心化的含义。 说起UTXO必须先">
+<meta property="og:type" content="article">
+<meta property="og:title" content="比特币UTXO和去中心化系统的设计">
+<meta property="og:url" content="joecao.github.io/2018/01/26/比特币UTXO和去中心化系统的设计/index.html">
 <meta property="og:site_name" content="曹祖鹏的Blog">
+<meta property="og:description" content="2018-01-26 曹祖鹏 起因刚进2018年，区块链突然大火，程序员们可能莫名其妙，不就是一个分布式系统么，怎么突然就要改变互联网了？趁着这个东风，我们了解一些区块链基础知识。看看是否可以改变世界。 UTXO是什么UTXO是Unspent Transaction Output（未消费交易输出）简写。这绝对是比特币的非常特殊的地方，理解UTXO也就理解了比特币去中心化的含义。 说起UTXO必须先">
+<meta property="og:image" content="http://os8wjvykw.bkt.clouddn.com/2018-01-26-112822.jpg">
+<meta property="og:image" content="http://os8wjvykw.bkt.clouddn.com/2018-01-26-112819.jpg">
+<meta property="og:image" content="http://os8wjvykw.bkt.clouddn.com/2018-01-26-112821.jpg">
+<meta property="og:updated_time" content="2018-01-26T11:38:07.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="曹祖鹏的Blog">
+<meta name="twitter:title" content="比特币UTXO和去中心化系统的设计">
+<meta name="twitter:description" content="2018-01-26 曹祖鹏 起因刚进2018年，区块链突然大火，程序员们可能莫名其妙，不就是一个分布式系统么，怎么突然就要改变互联网了？趁着这个东风，我们了解一些区块链基础知识。看看是否可以改变世界。 UTXO是什么UTXO是Unspent Transaction Output（未消费交易输出）简写。这绝对是比特币的非常特殊的地方，理解UTXO也就理解了比特币去中心化的含义。 说起UTXO必须先">
+<meta name="twitter:image" content="http://os8wjvykw.bkt.clouddn.com/2018-01-26-112822.jpg">
   
     <link rel="alternative" href="/atom.xml" title="曹祖鹏的Blog" type="application/atom+xml">
   
@@ -150,16 +158,14 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-    <article id="post-比特币UTXO和去中心化系统的设计" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+            <article id="post-比特币UTXO和去中心化系统的设计" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/01/26/比特币UTXO和去中心化系统的设计/">比特币UTXO和去中心化系统的设计</a>
+    <h1 class="article-title" itemprop="name">
+      比特币UTXO和去中心化系统的设计
     </h1>
   
 
@@ -176,324 +182,51 @@
 <h2 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h2><p>刚进2018年，区块链突然大火，程序员们可能莫名其妙，不就是一个分布式系统么，怎么突然就要改变互联网了？趁着这个东风，我们了解一些区块链基础知识。看看是否可以改变世界。</p>
 <h2 id="UTXO是什么"><a href="#UTXO是什么" class="headerlink" title="UTXO是什么"></a>UTXO是什么</h2><p>UTXO是Unspent Transaction Output（未消费交易输出）简写。这绝对是比特币的非常特殊的地方，理解UTXO也就理解了比特币去中心化的含义。</p>
 <p>说起UTXO必须先要介绍交易模型。以我们平时对交易的理解，我给张三转账了一笔100块钱，那就是我的账上的钱少了100，张三账上的钱多了100。我们再把问题稍微复杂一些，我和张三合起来买一个李四的一个商品390块钱。我的账户支付100，张三账户支付300，李四的帐户获得390，支付宝账户获得了10块钱的转账手续费。那么对这比交易的记录应该是这样的：</p>
-        
-          <a class="article-more-a" href="/2018/01/26/比特币UTXO和去中心化系统的设计/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/01/26/比特币UTXO和去中心化系统的设计/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
-  
-    <article id="post-Java未来也许不再是电商的首选开发语言" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/12/06/Java未来也许不再是电商的首选开发语言/">Java未来也许不再是电商的首选开发语言</a>
-    </h1>
-  
-
-        
-        <a href="/2017/12/06/Java未来也许不再是电商的首选开发语言/" class="archive-article-date">
-  	<time datetime="2017-12-06T10:00:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-12-06</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p><em>2017-12-06 曹祖鹏</em></p>
-<p>好久没更新博客了，很多人催促我更新，最近因为公司的事情一直是忙（其实是懒病发作），特别是被推广了一波后，再不更对不起读者了。 </p>
-<p>上周我参加了在南京举办的IAS的架构师峰会，和很多同行沟通，特别是和当当网的首席架构师张亮做了一个结对的分享 —《技术架构演变全景图—从单体式到云原生》，分享的形式很特殊，采用了一问一答的方式，我作为提问题的，不断“刁难”张亮，张亮一一解答问题，一番“交锋”后，听众有反馈效果不错，我自己也收获了不少。</p>
-<p>最重要的一点体会是Java未来也许不再是一个电商首选语言了。当然在互联网其他领域，Java早就不是首选了，开发繁琐，包体积大、运行时开销大等等，都不适合互联网创业。但是对于互联网电商来说，前面有阿里、京东全线转型Java技术栈的案例，后面像饿了么这样的新兴电商也慢慢的从Python转向Java，示范作用很强。以至于我们这样的电商软件提供商，把整体是Java架构当做卖点之一。<br>
-        
-          <a class="article-more-a" href="/2017/12/06/Java未来也许不再是电商的首选开发语言/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2017/12/06/Java未来也许不再是电商的首选开发语言/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
-  
-    <article id="post-CQRS初探" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/08/26/CQRS初探/">CQRS初探</a>
-    </h1>
-  
-
-        
-        <a href="/2017/08/26/CQRS初探/" class="archive-article-date">
-  	<time datetime="2017-08-26T10:00:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-08-26</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p><em>2017-8-26 曹祖鹏</em></p>
-<h4 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h4><p>我们惯常开发的概念中，一直以CRUD为主（Create、Retrieve、Update、Delete），默认我们读操作（Retrieve）的对象模型和写操作（Create、Update、Delete）是同一个对象、同一张表，这对简单的业务逻辑来说，比较合适，但是在复杂的业务逻辑下，CRUD就有点力不从心了。</p>
-        
-          <a class="article-more-a" href="/2017/08/26/CQRS初探/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2017/08/26/CQRS初探/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
-  
-    <article id="post-Design for Failure-Saga模式和消息驱动" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/07/16/Design for Failure-Saga模式和消息驱动/">Saga模式和事件驱动</a>
-    </h1>
-  
-
-        
-        <a href="/2017/07/16/Design for Failure-Saga模式和消息驱动/" class="archive-article-date">
-  	<time datetime="2017-07-16T12:46:25.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-07-16</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>在领域驱动设计的实践中，我一直有个问题没想明白 – 领域聚合对象对于某一类事物的抽象是很准确的，比如库存、商品、会员，这个和现实生活中的能一一对应上。通过充血模型将数据和行为统一起来，很容易理解。<br>但是类似订单、审批流程，这类逻辑一直没有很好的抽象方式。从内部状态看，他纯粹是个有限状态机，没啥特别的商业逻辑；从行为看，却发现他的所有状态变更，都是需要调用外部模块，并根据外部模块的返回结果，再确定迁越到哪个状态。这和我们以前充血模型中将行为控制在只修改本身状态的做法是相抵触的。<br>比如库存实体，不管是出库、入库、下单、发货、上架、下架，改变的只是库存商品的状态和数量，不涉及外部模块。<br>但是对比订单，它的下单、支付、发货、签收等需要支付、库存、配送模块一起配合返回结果，还要处理其他模块的各种各样的失败情况（库存不足，用户没钱支付、用户拒收等等）。<br>这就尴尬了，这样的实体聚合的方法必须依赖外部模块，耦合拆不开，系统不能<strong>自洽</strong>，它的开发、测试、部署上线都是麻烦的事情。<br>这个疑惑直到我了解Saga</p>
-        
-          <a class="article-more-a" href="/2017/07/16/Design for Failure-Saga模式和消息驱动/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2017/07/16/Design for Failure-Saga模式和消息驱动/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
-  
-    <article id="post-[译]领域驱动设计和Spring" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/06/29/[译]领域驱动设计和Spring/">领域驱动设计和Spring</a>
-    </h1>
-  
-
-        
-        <a href="/2017/06/29/[译]领域驱动设计和Spring/" class="archive-article-date">
-  	<time datetime="2017-06-29T12:46:25.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-06-29</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>原文 <a href="http://static.olivergierke.de/lectures/ddd-and-spring/" target="_blank" rel="external">http://static.olivergierke.de/lectures/ddd-and-spring/</a></p>
-<p>1、<strong>介绍</strong><br>这篇文章是的介绍一下领域驱动设计的基础构件、概念和Java的web应用（主要是基于Spring框架）之间的关系和区别。<br>这篇文章的第二部分讲了怎么把实体、聚合根、仓储映射到使用Spring框架的Java应用中<br>2、领域驱动设计<br>Eric Evans的《领域驱动设计》无疑是软件设计领域最重要的几本书之一。<br>这本书主要集中在软件开发中如何处理领域和软件的映射关系— 开始强调领域通用语言(domain ubiquitous language)，通过语言来提取模型，最终映射到一个可工作的软件上。<br>我们已经对软件设计模式比较熟悉了，他是用于描述和提炼Class和Class关系的技术语言。而DDD是一种用于程序员和业务沟通的更通用的语言，使用DDD可以最终将代码映射到模型上。</p>
-        
-          <a class="article-more-a" href="/2017/06/29/[译]领域驱动设计和Spring/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2017/06/29/[译]领域驱动设计和Spring/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
-  
-    <article id="post-多研究些架构，少谈些框架（3）- 微服务和事件驱动" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/06/16/多研究些架构，少谈些框架（3）- 微服务和事件驱动/">多研究些架构，少谈些框架（3）-- 微服务和事件驱动</a>
-    </h1>
-  
-
-        
-        <a href="/2017/06/16/多研究些架构，少谈些框架（3）- 微服务和事件驱动/" class="archive-article-date">
-  	<time datetime="2017-06-16T10:00:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-06-16</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p><em>2017-6-16 曹祖鹏</em></p>
-<p>接上篇，我们采用了领域驱动的开发方式，使用了充血模型，享受了他的好处，但是也不得不面对他带来的弊端。这个弊端在分布式的微服务架构下面又被放大。</p>
-<h4 id="事务一致性"><a href="#事务一致性" class="headerlink" title="事务一致性"></a>事务一致性</h4><p>事务一致性的问题在Monolithic下面不是大问题，在微服务下面却是很致命，我们回顾一下所谓的ACID原则</p>
+<a id="more"></a>   
+<p><img src="http://os8wjvykw.bkt.clouddn.com/2018-01-26-112822.jpg" alt="帐户模型"></p>
+<p>这种记账方式常用在财务记账上。不过作为一个去中心化的系统，是没有一个中心化银行管理你的开户、销户、余额的。没有余额，怎么判断你的账上有100块钱？</p>
+<p><img src="http://os8wjvykw.bkt.clouddn.com/2018-01-26-112819.jpg" alt="如何确认"></p>
+<p>此时用户C必须将前面几次交易的比特币输出作为下一个关联交易的输入，具体见下图的no 321笔交易，用户C将前面获得的两次输出，作为输入放在了交易中，然后给自己输出1个比特币的找零（如果不给自己输出找零，那么这个差额就被矿工当成小费了，切记切记）。比特币的程序会判定，如果两个UTXO加在一起不够支付，则交易不成功。</p>
+<p><img src="http://os8wjvykw.bkt.clouddn.com/2018-01-26-112821.jpg" alt="区块链基础.001"></p>
+<p>比特币UTXO使用有点像古代的银锭</p>
 <ul>
-<li>Atomicity - 原子性，改变数据状态要么是一起完成，要么一起失败</li>
-<li>Consistency - 一致性，数据的状态是完整一致的</li>
-<li>Isolation - 隔离线，即使有并发事务，互相之间也不影响</li>
-<li>Durability - 持久性， 一旦事务提交，不可撤销</li>
+<li>五两的银锭付给别人二两，需要通过夹剪将一整块银锭剪成两块，二两的给别人，三两的留给自己。对比：比特币在输出中重新创建一个新的UTXO作为给自己的找零</li>
+<li>要付给别人五两，手上有几块碎银子单都不足五两，则需要将碎银子一起付给对方。对比：比特币在输入中同时引用多个输出UTXO。</li>
 </ul>
-        
-          <a class="article-more-a" href="/2017/06/16/多研究些架构，少谈些框架（3）- 微服务和事件驱动/#more">more >></a>
-        
+<p>这样的做法很繁琐，所以银两在古代并不是一个很普遍的支付方式（别被武侠片给骗了，大部分还是用铜钱）。<br>比特币采用UTXO并不能很直观的去理解，但是为什么要用呢？</p>
+<h2 id="使用UTXO的动机"><a href="#使用UTXO的动机" class="headerlink" title="使用UTXO的动机"></a>使用UTXO的动机</h2><p>那么我们站在系统设计的角度猜测一下为什么中本聪会考虑使用UTXO。</p>
+<ul>
+<li>比特币是没有开户的过程的，一个本地计算生成公私钥就能构成一个合法的帐户，甚至有些用户为了一些“靓号”帐户，通过暴力运算生成天量的再也不会使用的帐户。去中心化系统无法跟踪每个账户的生成和销毁，这样的系统里面的帐户数量远大于未消费的输出数量，所以以UTXO来替代跟踪帐户交易的方式，消耗的系统资源会比较少 ；</li>
+<li>比特币有个比较好的特性是匿名性，很多人每次交易就换一对公私钥，交易输出的给自己的找零往往输出到一个另外的帐户下去，UTXO迎合了这种需求。而使用帐户就没那么灵活了。</li>
+<li>如果我使用余额系统，那么在生成一笔交易的时候，我首先要考虑的就是“幂等”问题，因为发出去的交易是给某个帐户加减钱，如果交易因为网络等原因重新发送，变成两笔交易重复扣钱，我就要哭了，这是在区块链里面著名的“重放攻击”。所以交易必须设计一个唯一的标识id让服务器知道这是同一笔交易。但是在去中心化系统中没有一个超级服务器统一分配交易ID，只能本地生成，而且跟踪这些交易ID的状态，也是一个很大的负担，因为我需要将区块链从创世块到现在所有的交易都遍历一遍，才能确定是是否是重复交易。如果用UTXO就可以避免这个问题，UTXO相比交易数少了不止一个数量级，而且UTXO只有两个状态—未消费、被消费，比特币只能有一个操作— 将为消费的UTXO变为已消费状态。不管我发送多少次交易，都会得到一个结果。</li>
+<li>在中本聪倡导每个cpu都是一票的去中心化社区，让每个节点都有能力去做计算是需要特别重视的，否则单个节点的计算能力要求过高，整个系统将向着“中心化”趋势滑下去。</li>
+</ul>
+<p>在比特币的实现中，是把所有的UTXO保存在一个单独的UTXOSet缓存中，截止2017年9月，这个缓存大概2.7Gb，与之对应，整个区块链的交易数据达到140Gb，UTXO缓存像是一个只保存了最终一个状态的git，整体的消耗负担小了很多很多。</p>
+<p>但是中本聪没想到，很多人现在把交易输出的脚本玩出花来了，导致很多UTXO创建出来就是不为消费用的，永远不会被消费掉，节点的负担越来越重。这才有了后续的BIP改进以及以太坊的账户模型。那又是一个很长的故事了…</p>
+
       
 
       
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2017/06/16/多研究些架构，少谈些框架（3）- 微服务和事件驱动/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
-  
-    <article id="post-多研究些架构，少谈些框架（2）-微服务和充血模型" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/06/12/多研究些架构，少谈些框架（2）-微服务和充血模型/">多研究些架构，少谈些框架（2）-- 微服务和充血模型</a>
-    </h1>
-  
-
-        
-        <a href="/2017/06/12/多研究些架构，少谈些框架（2）-微服务和充血模型/" class="archive-article-date">
-  	<time datetime="2017-06-12T07:00:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-06-12</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p><em>2017-6-12 曹祖鹏</em><br>上篇我们聊了微服务的DDD之间的关系，很多人还是觉得很虚幻，DDD那么复杂的理论，聚合根、值对象、事件溯源，到底我们该怎么入手呢？<br>实际上DDD和面向对象设计、设计模式等等理论有千丝万缕的联系，如果不熟悉OOA、OOD，DDD也是使用不好的。不过学习这些OO理论的时候，大家往往感觉到无用武之地，因为大部分的Java程序员开发生涯是从学习J2EE经典的分层理论开始的（Action、Service、Dao），在这种分层理论中，我们基本没有啥机会使用那些所谓的“行为型”的设计模式，这里的核心原因，就是J2EE经典分层的开发方式是“贫血模型”。<br>Martin Fowler在他的《企业应用架构模式》这本书中提出了两种开发方式“事务脚本”和“领域模型”，这两种开发分别对应了“贫血模型”和“充血模型”。</p>
-        
-          <a class="article-more-a" href="/2017/06/12/多研究些架构，少谈些框架（2）-微服务和充血模型/#more">more >></a>
-        
-      
-
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
       
     </div>
     <div class="article-info article-info-index">
@@ -502,179 +235,74 @@
       
 
       
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2017/06/12/多研究些架构，少谈些框架（2）-微服务和充血模型/">展开全文 >></a>
-        </p>
-      
 
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
+        </div>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="http://s.jiathis.com/qrcode.php?url=http:joecao.github.io/2018/01/26/比特币UTXO和去中心化系统的设计/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
       
       <div class="clearfix"></div>
     </div>
   </div>
 </article>
 
-
-
-
-
   
-    <article id="post-多研究些架构，少谈些框架（1）-论微服务架构的核心概念" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
+<nav id="article-nav">
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/06/09/多研究些架构，少谈些框架（1）-论微服务架构的核心概念/">多研究些架构，少谈些框架（1） -- 论微服务架构的核心概念</a>
-    </h1>
   
-
-        
-        <a href="/2017/06/09/多研究些架构，少谈些框架（1）-论微服务架构的核心概念/" class="archive-article-date">
-  	<time datetime="2017-06-09T07:00:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-06-09</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p><em>2017-6-9 曹祖鹏</em></p>
-<h4 id="微服务架构和SOA区别"><a href="#微服务架构和SOA区别" class="headerlink" title="微服务架构和SOA区别"></a>微服务架构和SOA区别</h4><p>微服务现在辣么火，业界流行的对比的却都是所谓的Monolithic单体应用，而大量的系统在十几年前都是已经是分布式系统了，那么微服务作为新的理念和原来的分布式系统，或者说SOA（面向服务架构）是什么区别呢？  </p>
-        
-          <a class="article-more-a" href="/2017/06/09/多研究些架构，少谈些框架（1）-论微服务架构的核心概念/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2017/06/09/多研究些架构，少谈些框架（1）-论微服务架构的核心概念/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
+    <a href="/2017/12/06/Java未来也许不再是电商的首选开发语言/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Java未来也许不再是电商的首选开发语言</div>
+      <i class="icon-circle-right"></i>
+    </a>
   
-    <article id="post-微服务之构建容错和自动降级的系统" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/11/09/微服务之构建容错和自动降级的系统/">微服务之构建容错&amp;自动降级的系统</a>
-    </h1>
-  
-
-        
-        <a href="/2016/11/09/微服务之构建容错和自动降级的系统/" class="archive-article-date">
-  	<time datetime="2016-11-09T12:46:25.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2016-11-09</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="微服务是什么"><a href="#微服务是什么" class="headerlink" title="微服务是什么"></a>微服务是什么</h3><p>MicroService主要是针对以前的Monolithic（单体）服务来说的，类似优步打车（Uber）这样的应用，如果使用Monolithic来架构，可能是这样的   </p>
-<p><img src="https://user-images.githubusercontent.com/3287183/27023280-756b952c-4f84-11e7-8c76-248145788f7e.png" alt="graph-01-e1431978090737"></p>
-<blockquote>
-<p>注：<br>STRIPE是支付服务<br>SENDGRID是邮件推送服务<br>TWILIO是语音、消息的云服务</p>
-</blockquote>
-<p>大部分的项目都是由Monolithic起步的。刚开始最合适不过了，开发简单直接（直接在一个IDE里面就可以调试）、部署方便（搞个war包扔到tomcat里面就能跑）。<br>但是随着时间的增长，单体应用的缺陷暴露出来了。</p>
-        
-          <a class="article-more-a" href="/2016/11/09/微服务之构建容错和自动降级的系统/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2016/11/09/微服务之构建容错和自动降级的系统/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
-  
-    <article id="post-一个参数引发的血案" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2013/03/01/一个参数引发的血案/">一个参数引发的血案</a>
-    </h1>
-  
-
-        
-        <a href="/2013/03/01/一个参数引发的血案/" class="archive-article-date">
-  	<time datetime="2013-03-01T10:00:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2013-03-01</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h4 id="事情经过"><a href="#事情经过" class="headerlink" title="事情经过"></a>事情经过</h4><p>2月1号上午10点</p>
-<p>sales api应用在70网段的104服务器 的dubbo thread线程池 满了，主数据库maindb、商品数据库itemdb连接池都占满，紧急重启后一分钟，线程池、连接池还是占满，重启了2次还是这个情况，只得应用关闭。</p>
-<p>下午3点</p>
-<p>sales api在66网段所有应用的线程池、连接池全满。重启后依旧，不断重启了20分钟左右，只得放弃，随后暂时关闭前端的sales web的正式环境，只保留灰度环境，然后再启动sales api，这次终于成功启动了，但是后台应用还是不断的出现线程满的情况，直到4点15分暂时恢复正常。</p>
-<p>下午5点50分</p>
-<p>又出现所有应用线程池、连接池 全满，临时增加了sales api的应用负载到5个，未解决问题。增加主数据库和查询库连接池连接上限到100个, 仍然无效。同时DBA报告商品数据库的压力一直在16左右，即cpu在100%，业务一直处于瘫痪中</p>
-<p>下午6点50分</p>
-<p>DBA发现一个查询最频繁，同时耗cpu较高的sql，关闭了这个sql的接口，只保留灰度环境上的这个功能。这时商品库的压力下降到30％左右。此时，70网段的131号的sales api负载cpu较高，导致thread满。重启无效，遂关闭。</p>
-        
-          <a class="article-more-a" href="/2013/03/01/一个参数引发的血案/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2013/03/01/一个参数引发的血案/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
+</nav>
 
 
 
@@ -682,9 +310,10 @@
 
   
   
-    <nav id="page-nav">
-      <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
-    </nav>
+  
+
+  
+
   
 
 
@@ -713,8 +342,8 @@
     <script>
 	var yiliaConfig = {
 		mathjax: false,
-		isHome: true,
-		isPost: false,
+		isHome: false,
+		isPost: true,
 		isArchive: false,
 		isTag: false,
 		isCategory: false,
