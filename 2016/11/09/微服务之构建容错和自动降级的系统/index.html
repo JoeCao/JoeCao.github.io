@@ -27,7 +27,7 @@
 <meta property="og:image" content="https://user-images.githubusercontent.com/3287183/27023433-19fae0c0-4f85-11e7-8ea3-cd5669fdada7.png">
 <meta property="og:image" content="https://user-images.githubusercontent.com/3287183/27023442-2205624a-4f85-11e7-8a3b-6d54fe7db3ba.png">
 <meta property="og:image" content="https://user-images.githubusercontent.com/3287183/27618913-8ebf4766-5bf1-11e7-95ce-56055ad9effe.jpg">
-<meta property="og:updated_time" content="2017-07-30T02:12:01.000Z">
+<meta property="og:updated_time" content="2018-02-08T14:26:54.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="微服务之构建容错&amp;自动降级的系统">
 <meta name="twitter:description" content="微服务是什么MicroService主要是针对以前的Monolithic（单体）服务来说的，类似优步打车（Uber）这样的应用，如果使用Monolithic来架构，可能是这样的      注：STRIPE是支付服务SENDGRID是邮件推送服务TWILIO是语音、消息的云服务  大部分的项目都是由Monolithic起步的。刚开始最合适不过了，开发简单直接（直接在一个IDE里面就可以调试）、部署方">
@@ -230,7 +230,7 @@
 <ul>
 <li>后端代码必须改造，因为APP调不了Dubbo协议（二进制的比较复杂），我们得给每个服务都架设一个HTTP代理，也无法利用MicroService的服务发现机制（暴露Zookeeper到公网，非常不安全），必须通过额外的nginx做负载均衡</li>
 <li>客户端的代码极其冗余，因为业务数据是需要融合的，很多页面需要发送多次请求才能返回给用户一个完成的View，再加上UI 的Callback hell，特别酸爽</li>
-<li>将内部的逻辑放到了客户端，一旦服务有拆分、融合之类的操作，APP也必须升级<h3 id="适配移动化的BFF架构"><a href="#适配移动化的BFF架构" class="headerlink" title="适配移动化的BFF架构"></a>适配移动化的BFF架构</h3>在微服务和APP之间建立一个沟通的桥梁，一个网关（Gateway），我们称之为<strong>Backend for Fronter</strong>，一个专为前端准备的后端（绕口令中）<br><img src="https://user-images.githubusercontent.com/3287183/27023336-b223546e-4f84-11e7-81c4-b882594e8949.png" alt="graph-09"><br>BFF职责是路由、聚合、协议转换。<br>每个请求BFF都可能会调用后面多个微服务的Dubbo接口，将结果聚合后返回给前台。BFF需要给前端更粗颗粒的接口，避免APP的多次调用降低效率。比如/products/{productId}这样的接口会将商品标题、规格、图片、详情页面、评价一股脑的返回给前台。<h3 id="优缺点"><a href="#优缺点" class="headerlink" title="优缺点"></a>优缺点</h3>优点：提供了一站式的接口，隐藏内部逻辑，对前端开发友好<br>缺点：对高可用的架构来说，这个单点的职责较重。</li>
+<li>将内部的逻辑放到了客户端，一旦服务有拆分、融合之类的操作，APP也必须升级<h3 id="适配移动化的BFF架构"><a href="#适配移动化的BFF架构" class="headerlink" title="适配移动化的BFF架构"></a>适配移动化的BFF架构</h3>在微服务和APP之间建立一个沟通的桥梁，一个网关（Gateway），我们称之为<strong>Backend for Frontier</strong>，一个专为前端准备的后端（绕口令中）<br><img src="https://user-images.githubusercontent.com/3287183/27023336-b223546e-4f84-11e7-81c4-b882594e8949.png" alt="graph-09"><br>BFF职责是路由、聚合、协议转换。<br>每个请求BFF都可能会调用后面多个微服务的Dubbo接口，将结果聚合后返回给前台。BFF需要给前端更粗颗粒的接口，避免APP的多次调用降低效率。比如/products/{productId}这样的接口会将商品标题、规格、图片、详情页面、评价一股脑的返回给前台。<h3 id="优缺点"><a href="#优缺点" class="headerlink" title="优缺点"></a>优缺点</h3>优点：提供了一站式的接口，隐藏内部逻辑，对前端开发友好<br>缺点：对高可用的架构来说，这个单点的职责较重。</li>
 </ul>
 <h3 id="微服务后，中心应该如何开发？"><a href="#微服务后，中心应该如何开发？" class="headerlink" title="微服务后，中心应该如何开发？"></a>微服务后，中心应该如何开发？</h3><p>以商品中心为例：一个大的商品中心服务可以被拆为类目、商品、价格、库存四个微服务。这样每个服务的职责专注，接口单一。每个服务可以有自己的存储，甚至可以用不同的存储，比如商品适合Elasticsearch的搜索引擎，库存就适合Redis这样的内存数据库。这样系统的性能提升。<br>问题又出现了，服务拆开，本来一个接口能返回的数据，必须通过分别调用不同服务的接口来完成。更糟糕的是，不同的服务使用不同的存储引擎，以前一个sql join能解决的事情，变得非常的复杂。<br>如何解决？</p>
 <ul>
@@ -238,7 +238,7 @@
 <li>可以使用最新的思路在客户端缓存数据，相当于在app、js侧做了一个数据拷贝的子集（mongodb？），通过diff之类的算法和后端不断同步数据。（类似firebase，野狗的思路）</li>
 <li>使用类似物化视图的概念，在业务侧生成他需要的视图数据。加快查询速度。<br><img src="https://user-images.githubusercontent.com/3287183/27023362-c1b2b596-4f84-11e7-8d12-fdad9a1d0e5b.png" alt="1461741321743"><br>以上方案视情况采用</li>
 </ul>
-<h3 id="Backend-for-Fronter和SOA配合的烦恼"><a href="#Backend-for-Fronter和SOA配合的烦恼" class="headerlink" title="Backend for Fronter和SOA配合的烦恼"></a>Backend for Fronter和SOA配合的烦恼</h3><p>一旦涉及到调用多个后台SOA的接口，SOA接口之间有一定关联关系，需要将结果组合，这组调用的危险性就很大。<br>以我们常见的商品列表的接口举例，该接口不仅仅是调用了商品中心商品信息接口，还调用了定价服务的用户级别价格接口，然后组合（zip）成为一个商品完整信息返回。<br>在某些情况下价格服务失效，或者是返回时长波动，那么整个商品列表就一直会阻塞，直到超时也不会返回结果，用户在前台看到的是一个<strong><em>空白的转圈的页面</em></strong>。 用户只会认为整个系统都挂了，他可不管你里面发生了什么。<br>微服务架构成规模后，任何一个我们认为的微不足道的服务的故障，都会导致整个业务的不可用。而在SOA模式下面数千个服务，可能有一定的几率某几个服务是失效的，这种minor的失效导致整个系统不可用的失败，是SOA的一大硬伤。  </p>
+<h3 id="Backend-for-Frontier和SOA配合的烦恼"><a href="#Backend-for-Frontier和SOA配合的烦恼" class="headerlink" title="Backend for Frontier和SOA配合的烦恼"></a>Backend for Frontier和SOA配合的烦恼</h3><p>一旦涉及到调用多个后台SOA的接口，SOA接口之间有一定关联关系，需要将结果组合，这组调用的危险性就很大。<br>以我们常见的商品列表的接口举例，该接口不仅仅是调用了商品中心商品信息接口，还调用了定价服务的用户级别价格接口，然后组合（zip）成为一个商品完整信息返回。<br>在某些情况下价格服务失效，或者是返回时长波动，那么整个商品列表就一直会阻塞，直到超时也不会返回结果，用户在前台看到的是一个<strong><em>空白的转圈的页面</em></strong>。 用户只会认为整个系统都挂了，他可不管你里面发生了什么。<br>微服务架构成规模后，任何一个我们认为的微不足道的服务的故障，都会导致整个业务的不可用。而在SOA模式下面数千个服务，可能有一定的几率某几个服务是失效的，这种minor的失效导致整个系统不可用的失败，是SOA的一大硬伤。  </p>
 <p><img src="https://user-images.githubusercontent.com/3287183/27023371-cd10eea8-4f84-11e7-9dc5-b8b4aaa81a19.png" alt="richardson-microservices-part3-threads-blocked-1024x383"></p>
 <p>在后端服务失效这种情况下，我们希望API网关能做到</p>
 <ul>

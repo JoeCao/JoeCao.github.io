@@ -8,19 +8,20 @@
   <link rel="dns-prefetch" href="joecao.github.io">
   <title>比特币UTXO和去中心化系统的设计 | 曹祖鹏的Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="2018-01-26 曹祖鹏 起因刚进2018年，区块链突然大火，程序员们可能莫名其妙，不就是一个分布式系统么，怎么突然就要改变互联网了？趁着这个东风，我们了解一些区块链基础知识。看看是否可以改变世界。 UTXO是什么UTXO是Unspent Transaction Output（未消费交易输出）简写。这绝对是比特币的非常特殊的地方，理解UTXO也就理解了比特币去中心化的含义。 说起UTXO必须先">
+  <meta name="description" content="2018-01-26 曹祖鹏 起因刚进2018年，区块链突然大热，程序员们可能莫名其妙，不就是一个分布式系统么，怎么突然就要改变互联网了？还是按照我们熟悉的分布式系统设计分析开始，我们了解一些区块链的基础知识，看看是否可以改变世界。 UTXO是什么UTXO是Unspent Transaction Output（未消费交易输出）简写。这绝对是比特币的非常特殊的地方，理解UTXO也就理解了比特币去中心">
 <meta property="og:type" content="article">
 <meta property="og:title" content="比特币UTXO和去中心化系统的设计">
 <meta property="og:url" content="joecao.github.io/2018/01/26/比特币UTXO和去中心化系统的设计/index.html">
 <meta property="og:site_name" content="曹祖鹏的Blog">
-<meta property="og:description" content="2018-01-26 曹祖鹏 起因刚进2018年，区块链突然大火，程序员们可能莫名其妙，不就是一个分布式系统么，怎么突然就要改变互联网了？趁着这个东风，我们了解一些区块链基础知识。看看是否可以改变世界。 UTXO是什么UTXO是Unspent Transaction Output（未消费交易输出）简写。这绝对是比特币的非常特殊的地方，理解UTXO也就理解了比特币去中心化的含义。 说起UTXO必须先">
+<meta property="og:description" content="2018-01-26 曹祖鹏 起因刚进2018年，区块链突然大热，程序员们可能莫名其妙，不就是一个分布式系统么，怎么突然就要改变互联网了？还是按照我们熟悉的分布式系统设计分析开始，我们了解一些区块链的基础知识，看看是否可以改变世界。 UTXO是什么UTXO是Unspent Transaction Output（未消费交易输出）简写。这绝对是比特币的非常特殊的地方，理解UTXO也就理解了比特币去中心">
 <meta property="og:image" content="http://os8wjvykw.bkt.clouddn.com/2018-01-26-112822.jpg">
 <meta property="og:image" content="http://os8wjvykw.bkt.clouddn.com/2018-01-26-112819.jpg">
 <meta property="og:image" content="http://os8wjvykw.bkt.clouddn.com/2018-01-26-112821.jpg">
-<meta property="og:updated_time" content="2018-01-26T11:38:07.000Z">
+<meta property="og:image" content="https://user-images.githubusercontent.com/3287183/27618913-8ebf4766-5bf1-11e7-95ce-56055ad9effe.jpg">
+<meta property="og:updated_time" content="2018-01-27T03:30:36.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="比特币UTXO和去中心化系统的设计">
-<meta name="twitter:description" content="2018-01-26 曹祖鹏 起因刚进2018年，区块链突然大火，程序员们可能莫名其妙，不就是一个分布式系统么，怎么突然就要改变互联网了？趁着这个东风，我们了解一些区块链基础知识。看看是否可以改变世界。 UTXO是什么UTXO是Unspent Transaction Output（未消费交易输出）简写。这绝对是比特币的非常特殊的地方，理解UTXO也就理解了比特币去中心化的含义。 说起UTXO必须先">
+<meta name="twitter:description" content="2018-01-26 曹祖鹏 起因刚进2018年，区块链突然大热，程序员们可能莫名其妙，不就是一个分布式系统么，怎么突然就要改变互联网了？还是按照我们熟悉的分布式系统设计分析开始，我们了解一些区块链的基础知识，看看是否可以改变世界。 UTXO是什么UTXO是Unspent Transaction Output（未消费交易输出）简写。这绝对是比特币的非常特殊的地方，理解UTXO也就理解了比特币去中心">
 <meta name="twitter:image" content="http://os8wjvykw.bkt.clouddn.com/2018-01-26-112822.jpg">
   
     <link rel="alternative" href="/atom.xml" title="曹祖鹏的Blog" type="application/atom+xml">
@@ -179,14 +180,14 @@
     <div class="article-entry" itemprop="articleBody">
       
         <p>2018-01-26 曹祖鹏</p>
-<h2 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h2><p>刚进2018年，区块链突然大火，程序员们可能莫名其妙，不就是一个分布式系统么，怎么突然就要改变互联网了？趁着这个东风，我们了解一些区块链基础知识。看看是否可以改变世界。</p>
+<h2 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h2><p>刚进2018年，区块链突然大热，程序员们可能莫名其妙，不就是一个分布式系统么，怎么突然就要改变互联网了？还是按照我们熟悉的分布式系统设计分析开始，我们了解一些区块链的基础知识，看看是否可以改变世界。</p>
 <h2 id="UTXO是什么"><a href="#UTXO是什么" class="headerlink" title="UTXO是什么"></a>UTXO是什么</h2><p>UTXO是Unspent Transaction Output（未消费交易输出）简写。这绝对是比特币的非常特殊的地方，理解UTXO也就理解了比特币去中心化的含义。</p>
 <p>说起UTXO必须先要介绍交易模型。以我们平时对交易的理解，我给张三转账了一笔100块钱，那就是我的账上的钱少了100，张三账上的钱多了100。我们再把问题稍微复杂一些，我和张三合起来买一个李四的一个商品390块钱。我的账户支付100，张三账户支付300，李四的帐户获得390，支付宝账户获得了10块钱的转账手续费。那么对这比交易的记录应该是这样的：</p>
 <a id="more"></a>   
 <p><img src="http://os8wjvykw.bkt.clouddn.com/2018-01-26-112822.jpg" alt="帐户模型"></p>
 <p>这种记账方式常用在财务记账上。不过作为一个去中心化的系统，是没有一个中心化银行管理你的开户、销户、余额的。没有余额，怎么判断你的账上有100块钱？</p>
 <p><img src="http://os8wjvykw.bkt.clouddn.com/2018-01-26-112819.jpg" alt="如何确认"></p>
-<p>此时用户C必须将前面几次交易的比特币输出作为下一个关联交易的输入，具体见下图的no 321笔交易，用户C将前面获得的两次输出，作为输入放在了交易中，然后给自己输出1个比特币的找零（如果不给自己输出找零，那么这个差额就被矿工当成小费了，切记切记）。比特币的程序会判定，如果两个UTXO加在一起不够支付，则交易不成功。</p>
+<p>如上图的一个例子，在最后一笔交易中，用户C必须将前面几次交易的比特币输出作为下一个关联交易的输入，具体见下图的no 321笔交易，用户C将前面获得的两次输出，作为输入放在了交易中，然后给自己输出1个比特币的找零（如果不给自己输出找零，那么这个差额就被矿工当成小费了，切记切记）。比特币的程序会判定，如果两个UTXO加在一起不够支付，则交易不成功。</p>
 <p><img src="http://os8wjvykw.bkt.clouddn.com/2018-01-26-112821.jpg" alt="区块链基础.001"></p>
 <p>比特币UTXO使用有点像古代的银锭</p>
 <ul>
@@ -203,6 +204,8 @@
 </ul>
 <p>在比特币的实现中，是把所有的UTXO保存在一个单独的UTXOSet缓存中，截止2017年9月，这个缓存大概2.7Gb，与之对应，整个区块链的交易数据达到140Gb，UTXO缓存像是一个只保存了最终一个状态的git，整体的消耗负担小了很多很多。</p>
 <p>但是中本聪没想到，很多人现在把交易输出的脚本玩出花来了，导致很多UTXO创建出来就是不为消费用的，永远不会被消费掉，节点的负担越来越重。这才有了后续的BIP改进以及以太坊的账户模型。那又是一个很长的故事了…</p>
+<h4 id="版权说明"><a href="#版权说明" class="headerlink" title="版权说明"></a>版权说明</h4><p>本文采用 CC BY 3.0 CN协议 进行许可。 可自由转载、引用，但需署名作者且注明文章出处。如转载至微信公众号，请在文末添加作者公众号二维码。</p>
+<h4 id="关注我"><a href="#关注我" class="headerlink" title="关注我"></a>关注我</h4><p>微信公众号<br><img src="https://user-images.githubusercontent.com/3287183/27618913-8ebf4766-5bf1-11e7-95ce-56055ad9effe.jpg" alt="qrcode_for_8"></p>
 
       
 
