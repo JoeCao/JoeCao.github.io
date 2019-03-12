@@ -14,12 +14,12 @@
 <meta property="og:url" content="joecao.github.io/2012/08/30/提高订单并发抓取效率的方法-通过redis实现分布式无锁算法/index.html">
 <meta property="og:site_name" content="曹祖鹏的Blog">
 <meta property="og:description" content="背景业务场景经常出现多个外部应用同时来获取订单的情况，谁先抢到订单先处理，但是如果让这些外挂获取了相同的订单，损失就大了。 目前的办法是让外部应用都同时获取一批订单记录，再到数据库一条条的update记录的处理人的字段（每次update都会单独启动事务，而不是把所有的update放到一个事务里面），如果update成功，那就可以处理这个订单，如果update失败，说明订单已经被其他程序取走处理。这">
-<meta property="og:image" content="http://os8wjvykw.bkt.clouddn.com/2017-08-17-021331.jpg">
-<meta property="og:updated_time" content="2017-08-17T02:14:06.000Z">
+<meta property="og:image" content="http://pic.ohant.com/2017-08-17-021331.jpg">
+<meta property="og:updated_time" content="2019-03-12T13:42:58.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="提高订单并发抓取效率的方法-通过redis实现分布式无锁算法">
 <meta name="twitter:description" content="背景业务场景经常出现多个外部应用同时来获取订单的情况，谁先抢到订单先处理，但是如果让这些外挂获取了相同的订单，损失就大了。 目前的办法是让外部应用都同时获取一批订单记录，再到数据库一条条的update记录的处理人的字段（每次update都会单独启动事务，而不是把所有的update放到一个事务里面），如果update成功，那就可以处理这个订单，如果update失败，说明订单已经被其他程序取走处理。这">
-<meta name="twitter:image" content="http://os8wjvykw.bkt.clouddn.com/2017-08-17-021331.jpg">
+<meta name="twitter:image" content="http://pic.ohant.com/2017-08-17-021331.jpg">
   
     <link rel="alternative" href="/atom.xml" title="曹祖鹏的Blog" type="application/atom+xml">
   
@@ -221,7 +221,7 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * 查询某个supCode+tpl下的订单。supCode+tpl相同时， 并发查询的时候会加上锁，避免取到同样的记录</div><div class="line"> * </div><div class="line"> * <span class="doctag">@param</span> supCode</div><div class="line"> * <span class="doctag">@param</span> tplId</div><div class="line"> * <span class="doctag">@param</span> fetchSize</div><div class="line"> * <span class="doctag">@return</span></div><div class="line"> */</div><div class="line"><span class="function"><span class="keyword">public</span> List&lt;OrderInfo&gt; <span class="title">queryOrder</span><span class="params">(String supCode, String tplId,</span></span></div><div class="line">        <span class="keyword">final</span> <span class="keyword">int</span> fetchSize) &#123;</div><div class="line">    <span class="keyword">final</span> String key = buildKey(supCode, tplId);</div><div class="line">    <span class="keyword">final</span> String hash = buildHashKey(supCode, tplId);</div><div class="line">    <span class="comment">// 以supCode+tplId为互斥锁，</span></div><div class="line">    String lockObject = buildLock(supCode, tplId);</div><div class="line">    <span class="keyword">final</span> List&lt;OrderInfo&gt; resultList = <span class="keyword">new</span> ArrayList&lt;OrderInfo&gt;();</div><div class="line">    template.run(lockObject, <span class="keyword">new</span> ExecuteWithLock() &#123;</div><div class="line"></div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">execute</span><span class="params">()</span> </span>&#123;</div><div class="line">            <span class="comment">//使用redis的list存放的order列表</span></div><div class="line">            <span class="keyword">long</span> listSize = redisTemplate.opsForList().size(key);</div><div class="line">            <span class="keyword">long</span> size = listSize &gt; fetchSize ? fetchSize : listSize;</div><div class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; size; i++) &#123;</div><div class="line">                String orderId = redisTemplate.opsForList().rightPop(key);</div><div class="line">                Object objectStr = redisTemplate.opsForHash().get(hash,</div><div class="line">                        orderId);</div><div class="line">                <span class="comment">// System.out.println(objectStr);</span></div><div class="line">                OrderInfo orderInfo = JSON.parseObject(</div><div class="line">                        String.valueOf(objectStr), OrderInfo.class);</div><div class="line">                resultList.add(orderInfo);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;);</div><div class="line">    <span class="keyword">return</span> resultList;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>以上命令、代码在redis2.4中测试通过</p>
 <h4 id="版权说明"><a href="#版权说明" class="headerlink" title="版权说明"></a>版权说明</h4><p>本文采用 CC BY 3.0 CN协议 进行许可。 可自由转载、引用，但需署名作者且注明文章出处。如转载至微信公众号，请在文末添加作者公众号二维码。</p>
-<h4 id="关注我"><a href="#关注我" class="headerlink" title="关注我"></a>关注我</h4><p>微信公众号<br><img src="http://os8wjvykw.bkt.clouddn.com/2017-08-17-021331.jpg" alt="qrcode_for_8寸"></p>
+<h4 id="关注我"><a href="#关注我" class="headerlink" title="关注我"></a>关注我</h4><p>微信公众号<br><img src="http://pic.ohant.com/2017-08-17-021331.jpg" alt="qrcode_for_8寸"></p>
 
       
 
@@ -354,7 +354,7 @@
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2018 Joe Cao
+    		&copy; 2019 Joe Cao
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten

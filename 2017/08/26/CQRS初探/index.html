@@ -14,14 +14,14 @@
 <meta property="og:url" content="joecao.github.io/2017/08/26/CQRS初探/index.html">
 <meta property="og:site_name" content="曹祖鹏的Blog">
 <meta property="og:description" content="2017-8-26 曹祖鹏 背景我们惯常开发的概念中，一直以CRUD为主（Create、Retrieve、Update、Delete），默认我们读操作（Retrieve）的对象模型和写操作（Create、Update、Delete）是同一个对象、同一张表，这对简单的业务逻辑来说，比较合适，但是在复杂的业务逻辑下，CRUD就有点力不从心了。">
-<meta property="og:image" content="http://os8wjvykw.bkt.clouddn.com/2017-08-29-AD05C010-B74F-4C8C-AF51-E1BAF16541EE.png">
-<meta property="og:image" content="http://os8wjvykw.bkt.clouddn.com/2017-08-27-A34E4BDC-8678-4F45-A4F6-07EECBF43DDF.png">
+<meta property="og:image" content="http://pic.ohant.com/2017-08-29-AD05C010-B74F-4C8C-AF51-E1BAF16541EE.png">
+<meta property="og:image" content="http://pic.ohant.com/2017-08-27-A34E4BDC-8678-4F45-A4F6-07EECBF43DDF.png">
 <meta property="og:image" content="https://user-images.githubusercontent.com/3287183/27618913-8ebf4766-5bf1-11e7-95ce-56055ad9effe.jpg">
-<meta property="og:updated_time" content="2017-09-15T07:05:00.000Z">
+<meta property="og:updated_time" content="2019-03-12T13:41:36.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="CQRS初探">
 <meta name="twitter:description" content="2017-8-26 曹祖鹏 背景我们惯常开发的概念中，一直以CRUD为主（Create、Retrieve、Update、Delete），默认我们读操作（Retrieve）的对象模型和写操作（Create、Update、Delete）是同一个对象、同一张表，这对简单的业务逻辑来说，比较合适，但是在复杂的业务逻辑下，CRUD就有点力不从心了。">
-<meta name="twitter:image" content="http://os8wjvykw.bkt.clouddn.com/2017-08-29-AD05C010-B74F-4C8C-AF51-E1BAF16541EE.png">
+<meta name="twitter:image" content="http://pic.ohant.com/2017-08-29-AD05C010-B74F-4C8C-AF51-E1BAF16541EE.png">
   
     <link rel="alternative" href="/atom.xml" title="曹祖鹏的Blog" type="application/atom+xml">
   
@@ -181,7 +181,7 @@
         <p><em>2017-8-26 曹祖鹏</em></p>
 <h4 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h4><p>我们惯常开发的概念中，一直以CRUD为主（Create、Retrieve、Update、Delete），默认我们读操作（Retrieve）的对象模型和写操作（Create、Update、Delete）是同一个对象、同一张表，这对简单的业务逻辑来说，比较合适，但是在复杂的业务逻辑下，CRUD就有点力不从心了。</p>
 <a id="more"></a>   
-<p><img src="http://os8wjvykw.bkt.clouddn.com/2017-08-29-AD05C010-B74F-4C8C-AF51-E1BAF16541EE.png" alt="AD05C010-B74F-4C8C-AF51-E1BAF16541EE"></p>
+<p><img src="http://pic.ohant.com/2017-08-29-AD05C010-B74F-4C8C-AF51-E1BAF16541EE.png" alt="AD05C010-B74F-4C8C-AF51-E1BAF16541EE"></p>
 <h4 id="Command（写）操作"><a href="#Command（写）操作" class="headerlink" title="Command（写）操作"></a>Command（写）操作</h4><p>我们对写操作的定义是会改变对象状态的一种操作，状态指的是广义上的，包含了对象所有属性的修改的一种操作，增删改属于写操作。<br>在我熟悉的电商业务中，写逻辑是比较复杂的，在写之前需要校验很多状态，拿常见的订单创建场景来说，我们需要检查库存的情况，校验用户价格是否正确，校验匹配的优惠活动，校验用户的积分使用情况…..<br>在退货的场景下面，需要检查双方达成的退款协议，检验货品是否已经处于发货路上，上述任意条件不达成，就不能退货，然后还要有退还积分、优惠劵等一系列的写操作。</p>
 <p>从上面的例子可以看出，完成Command主要有三种情况</p>
 <ul>
@@ -198,7 +198,7 @@
 </ul>
 <p>这里面就涉及到了一系列表的join查询，甚至sum、avg等等函数运算，但是请注意这里的查询已经涉及到了业务逻辑，查询程序需要了解领域对象之间的关联原则，用户的角色包含关系，有权限判断的要求。<br>这给我们的领域模型带来了不小的困惑，我们的领域模型都是按照写模型设计的，一旦查询涉及业务逻辑甚至多个领域的规则，就会力不从心了。比如只能查询自己名下客户的订单，按照DDD设计订单模型本来没有包含权限的部分，这是两个不同的限界上下文，实现方式只能先查询订单，再到权限模块接口上一个个去验证是否可以显示给界面，这样做不仅效率极低，而且没法实现分页的功能。<br>于是我们需要尝试新的架构风格，将查询和命令分开，使用不同的模型，也就是CQRS模式。</p>
 <h4 id="CQRS（Command-Query-Responsibility-Seperation）"><a href="#CQRS（Command-Query-Responsibility-Seperation）" class="headerlink" title="CQRS（Command Query Responsibility Seperation）"></a>CQRS（Command Query Responsibility Seperation）</h4><p>这里我们使用了API网关也就是BFF来区分读、写操作，发送到不同的模块执行，其中对Command Model的修改将通过event和消息队列交给Updater模块去更新查询视图</p>
-<p><img src="http://os8wjvykw.bkt.clouddn.com/2017-08-27-A34E4BDC-8678-4F45-A4F6-07EECBF43DDF.png" alt="A34E4BDC-8678-4F45-A4F6-07EECBF43DDF"></p>
+<p><img src="http://pic.ohant.com/2017-08-27-A34E4BDC-8678-4F45-A4F6-07EECBF43DDF.png" alt="A34E4BDC-8678-4F45-A4F6-07EECBF43DDF"></p>
 <p>有个需要注意的地方是，我们的查询指令就不通过任何的服务提供查询接口了，由API网关直接去查询对应的视图数据库。这样做有两个原因</p>
 <p>1、 我认为数据库提供的SQL或者ElasticSearch提供的查询DSL已经足够强大了，我们不需要自己再封装一层查询接口，浪费工作量而且用起来很别扭。</p>
 <p>2、我希望Query是不含有业务逻辑的，直接查询视图就能得到产品想要的数据，不要在查询中进行逻辑运算。我们应该还是尽量的把逻辑隐藏到领域对象内部。</p>
@@ -361,7 +361,7 @@
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2018 Joe Cao
+    		&copy; 2019 Joe Cao
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten

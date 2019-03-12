@@ -14,14 +14,14 @@
 <meta property="og:url" content="joecao.github.io/2017/12/06/Java未来也许不再是电商的首选开发语言/index.html">
 <meta property="og:site_name" content="曹祖鹏的Blog">
 <meta property="og:description" content="2017-12-06 曹祖鹏 好久没更新博客了，很多人催促我更新，最近因为公司的事情一直是忙（其实是懒病发作），特别是被推广了一波后，再不更对不起读者了。  上周我参加了在南京举办的IAS的架构师峰会，和很多同行沟通，特别是和当当网的首席架构师张亮做了一个结对的分享 —《技术架构演变全景图—从单体式到云原生》，分享的形式很特殊，采用了一问一答的方式，我作为提问题的，不断“刁难”张亮，张亮一一解答问">
-<meta property="og:image" content="http://os8wjvykw.bkt.clouddn.com/2017-12-06-C8FB90CC-4E74-4362-9C72-EB93421D17F4.png">
-<meta property="og:image" content="http://os8wjvykw.bkt.clouddn.com/2017-12-06-092614.jpg">
+<meta property="og:image" content="http://pic.ohant.com/2017-12-06-C8FB90CC-4E74-4362-9C72-EB93421D17F4.png">
+<meta property="og:image" content="http://pic.ohant.com/2017-12-06-092614.jpg">
 <meta property="og:image" content="https://user-images.githubusercontent.com/3287183/27618913-8ebf4766-5bf1-11e7-95ce-56055ad9effe.jpg">
-<meta property="og:updated_time" content="2017-12-07T01:36:50.000Z">
+<meta property="og:updated_time" content="2019-03-12T13:43:34.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java未来也许不再是电商的首选开发语言">
 <meta name="twitter:description" content="2017-12-06 曹祖鹏 好久没更新博客了，很多人催促我更新，最近因为公司的事情一直是忙（其实是懒病发作），特别是被推广了一波后，再不更对不起读者了。  上周我参加了在南京举办的IAS的架构师峰会，和很多同行沟通，特别是和当当网的首席架构师张亮做了一个结对的分享 —《技术架构演变全景图—从单体式到云原生》，分享的形式很特殊，采用了一问一答的方式，我作为提问题的，不断“刁难”张亮，张亮一一解答问">
-<meta name="twitter:image" content="http://os8wjvykw.bkt.clouddn.com/2017-12-06-C8FB90CC-4E74-4362-9C72-EB93421D17F4.png">
+<meta name="twitter:image" content="http://pic.ohant.com/2017-12-06-C8FB90CC-4E74-4362-9C72-EB93421D17F4.png">
   
     <link rel="alternative" href="/atom.xml" title="曹祖鹏的Blog" type="application/atom+xml">
   
@@ -185,10 +185,10 @@
 <p>说起来Service Mesh不是新概念了，在之前就有运维维护nginx的配置，做服务之间的调用代理，但是这个是很原始的状态。目前随着k8s在运维层面一统江山，基于k8s的linkerd、envoy、Istio一系列Service Mesh解决方案发展非常迅速，Willian Morgan（linkerd的CEO）给出Service Mesh定义： </p>
 <p><em>— 服务网格是一个基础设施层，用于处理服务间通讯。云原生应用有着复杂的服务拓扑，服务网格负责在这些拓扑中实现请求的可靠传递。在实践中，服务网格同程实现为一组轻量级的网络代理，它们于应用程序部署在一起，而<u><strong>对应用程序透明</strong></u></em></p>
 <p>对应用程序透明这几个字要画重点，说明以后再也不需要在<strong>开发层面</strong>关注负载均衡、路由、熔断、限流、服务注册发现、分布式跟踪等等一系列的服务治理内容了，这些都由我们的运行底层设施来完成了。类似网络七层OSI架构定义，我们做上层开发的不需要了解TCP、HTTP具体的协议，而聚焦到我关注的业务逻辑本身，这种情况很快会在微服务领域再次发生。下图预测了在2018年，哪些技术栈可能由于Service Mesh的发展而被抛弃掉。</p>
-<p><img src="http://os8wjvykw.bkt.clouddn.com/2017-12-06-C8FB90CC-4E74-4362-9C72-EB93421D17F4.png" alt="被抛弃的技术栈"></p>
+<p><img src="http://pic.ohant.com/2017-12-06-C8FB90CC-4E74-4362-9C72-EB93421D17F4.png" alt="被抛弃的技术栈"></p>
 <p>在这种情况下Java以引为傲的框架都无用武之地了，虽然Java的开发体验依然不错，但是未来的标准不一定是开发者引导的，运维可能会制定所谓的Cloud Native标准，要求满足标准的，才能上平台进行运行和调度。多语言在Service Mesh中一视同仁，我们很可能用Go来开发网络服务，用Php来做Web，用Node来做网关API，用Java做业务逻辑，服务之间的通讯就交给Service Mesh来统一处理，而整个庞大的微服务体系交由k8s这样的平台来调度和编排。</p>
 <p>好一幅蓝图，也许我们还觉得可能有点遥远–Istio才0.3版本，等它到了1.0再说，不过互联网技术迭代极快，而且Istio系出名门，发展势头不可小视，大有席卷天下的感觉。</p>
-<p><img src="http://os8wjvykw.bkt.clouddn.com/2017-12-06-092614.jpg" alt="扬帆远航的Isito"></p>
+<p><img src="http://pic.ohant.com/2017-12-06-092614.jpg" alt="扬帆远航的Isito"></p>
 <p>这样的变革对新兴的语言Go之类的是极大的利好，但是对Java并不是好事。特别对于我这样2003年接触Java的老程序员说，对Java是有特殊感情的，难道我们真的要见证一个时代的结束了么？</p>
 <p>我觉得Java要发展下去，还是有机会的：</p>
 <ul>
@@ -336,7 +336,7 @@
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2018 Joe Cao
+    		&copy; 2019 Joe Cao
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
