@@ -15,9 +15,9 @@
 <meta property="og:site_name" content="曹祖鹏的Blog">
 <meta property="og:description" content="在领域驱动设计的实践中，我一直有个问题没想明白 – 领域聚合对象对于某一类事物的抽象是很准确的，比如库存、商品、会员，这个和现实生活中的能一一对应上。通过充血模型将数据和行为统一起来，很容易理解。但是类似订单、审批流程，这类逻辑一直没有很好的抽象方式。从内部状态看，他纯粹是个有限状态机，没啥特别的商业逻辑；从行为看，却发现他的所有状态变更，都是需要调用外部模块，并根据外部模块的返回结果，再确定迁越">
 <meta property="og:image" content="https://ws2.sinaimg.cn/large/006tKfTcgy1fhodhslo8mj30ky0cqq4c.jpg">
-<meta property="og:image" content="http://os8wjvykw.bkt.clouddn.com/2017-07-18-BASE.jpg">
-<meta property="og:image" content="http://os8wjvykw.bkt.clouddn.com/2017-07-18-SEC.jpg">
-<meta property="og:updated_time" content="2017-07-30T01:42:56.000Z">
+<meta property="og:image" content="http://pic.youdetan.com/2017-07-18-BASE.jpg">
+<meta property="og:image" content="http://pic.youdetan.com/2017-07-18-SEC.jpg">
+<meta property="og:updated_time" content="2019-05-23T07:44:04.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Saga模式和事件驱动">
 <meta name="twitter:description" content="在领域驱动设计的实践中，我一直有个问题没想明白 – 领域聚合对象对于某一类事物的抽象是很准确的，比如库存、商品、会员，这个和现实生活中的能一一对应上。通过充血模型将数据和行为统一起来，很容易理解。但是类似订单、审批流程，这类逻辑一直没有很好的抽象方式。从内部状态看，他纯粹是个有限状态机，没啥特别的商业逻辑；从行为看，却发现他的所有状态变更，都是需要调用外部模块，并根据外部模块的返回结果，再确定迁越">
@@ -191,8 +191,10 @@
 <p>  JTA控制器统一向三个服务发起prepare的请求，如果都确认，就可以同时事务提交（请注意这里订单一旦生成就已经是commited状态了）。提交过程中所有的资源是锁定等待中的，如果账务扣款慢了（比如银行接口反应慢了），资源就会一直等待锁定，直到事务超时为止，这样对系统资源的消耗是巨大的。</p>
 <ul>
 <li><p>如果采用BASE事务</p>
-<p><img src="http://os8wjvykw.bkt.clouddn.com/2017-07-18-BASE.jpg" alt="BASE"></p>
-<p>​<br>BASE事务采用多段本地事务提交，将大事务拆为5个local transaction(T1-T5)，并为这些事务准备了冲正操作</p>
+<p><img src="http://pic.youdetan.com/2017-07-18-BASE.jpg" alt="BASE"></p>
+</li>
+</ul>
+<p>  BASE事务采用多段本地事务提交，将大事务拆为5个local transaction(T1-T5)，并为这些事务准备了冲正操作</p>
 <ul>
 <li><p>T1：Order服务先完成开启订单，订单状态Opened</p>
 </li>
@@ -215,12 +217,10 @@
 </blockquote>
 </li>
 </ul>
-</li>
-</ul>
 <p>ls</p>
 <h4 id="Saga特点"><a href="#Saga特点" class="headerlink" title="Saga特点"></a>Saga特点</h4><ul>
 <li><p>Saga Execution Coordinator(SEC)<br>我们有两种方式来处理Saga中的业务流程和失败补偿<br>做法一：让每个服务给后续步骤发送消息<br>做法二：通过一个统一的执行协调器来完成</p>
-<p>如果采用做法一，一旦有其中一个步骤失败，补偿操作非常麻烦，还会给模块带来不必要的耦合性，所以我们倾向于有一个统一的协调器来完成这个操作。<br><img src="http://os8wjvykw.bkt.clouddn.com/2017-07-18-SEC.jpg" alt="SEC"><br>从严格意义上来说，Saga本身是不包含业务逻辑的，Saga更倾向于“Process”而不是“Logic”。这里有人会不同意，我们订单流程里面那么多if else判断难道不是业务逻辑吗？其实这些if else正是需要根据业务步骤的处理结果来进行下一步，或者发起冲正操作。如果你用有限状态机来抽象，也不需要用If else了。Saga Execution Coordinator就是一个基于事件驱动的状态机的协调器。</p>
+<p>如果采用做法一，一旦有其中一个步骤失败，补偿操作非常麻烦，还会给模块带来不必要的耦合性，所以我们倾向于有一个统一的协调器来完成这个操作。<br><img src="http://pic.youdetan.com/2017-07-18-SEC.jpg" alt="SEC"><br>从严格意义上来说，Saga本身是不包含业务逻辑的，Saga更倾向于“Process”而不是“Logic”。这里有人会不同意，我们订单流程里面那么多if else判断难道不是业务逻辑吗？其实这些if else正是需要根据业务步骤的处理结果来进行下一步，或者发起冲正操作。如果你用有限状态机来抽象，也不需要用If else了。Saga Execution Coordinator就是一个基于事件驱动的状态机的协调器。</p>
 </li>
 <li>多实例<br>有了状态就需要保存状态，SEC的每个实例只包含单个Saga的状态，这就意味着如果你有多个订单，就会启动多个SEC。</li>
 <li><p>Event Handling<br>SEC需要用到Event Handling机制。我们有两个选择，一个是创建一个上帝Event Handler，来分发执行所有的Event。另外一个就是让Saga的SEC实例自己来订阅属于自身的Event。第二个方案比较合适一些。</p>

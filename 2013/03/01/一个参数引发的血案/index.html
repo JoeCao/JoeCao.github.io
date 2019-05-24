@@ -14,13 +14,13 @@
 <meta property="og:url" content="joecao.github.io/2013/03/01/一个参数引发的血案/index.html">
 <meta property="og:site_name" content="曹祖鹏的Blog">
 <meta property="og:description" content="事情经过2月1号上午10点 sales api应用在70网段的104服务器 的dubbo thread线程池 满了，主数据库maindb、商品数据库itemdb连接池都占满，紧急重启后一分钟，线程池、连接池还是占满，重启了2次还是这个情况，只得应用关闭。 下午3点 sales api在66网段所有应用的线程池、连接池全满。重启后依旧，不断重启了20分钟左右，只得放弃，随后暂时关闭前端的sales">
-<meta property="og:image" content="http://os8wjvykw.bkt.clouddn.com/2017-08-14-094854.jpg">
-<meta property="og:image" content="http://pic.ohant.com/2017-08-17-021331.jpg">
-<meta property="og:updated_time" content="2019-03-12T13:43:19.000Z">
+<meta property="og:image" content="http://pic.youdetan.com/2017-08-14-094854.jpg">
+<meta property="og:image" content="http://pic.youdetan.com/2017-08-17-021331.jpg">
+<meta property="og:updated_time" content="2019-05-23T07:42:28.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="一个参数引发的血案">
 <meta name="twitter:description" content="事情经过2月1号上午10点 sales api应用在70网段的104服务器 的dubbo thread线程池 满了，主数据库maindb、商品数据库itemdb连接池都占满，紧急重启后一分钟，线程池、连接池还是占满，重启了2次还是这个情况，只得应用关闭。 下午3点 sales api在66网段所有应用的线程池、连接池全满。重启后依旧，不断重启了20分钟左右，只得放弃，随后暂时关闭前端的sales">
-<meta name="twitter:image" content="http://os8wjvykw.bkt.clouddn.com/2017-08-14-094854.jpg">
+<meta name="twitter:image" content="http://pic.youdetan.com/2017-08-14-094854.jpg">
   
     <link rel="alternative" href="/atom.xml" title="曹祖鹏的Blog" type="application/atom+xml">
   
@@ -195,7 +195,7 @@
 <figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">DubboServerHandler-192.168.111.184:20882-thread-176" daemon prio=10 tid=0x00002aaab82c0800 nid=0x62bb waiting on condition [0x0000000052c67000]</div><div class="line">   java.lang.Thread.State: WAITING (parking)</div><div class="line">	at sun.misc.Unsafe.park(Native Method)</div><div class="line">	- parking to wait for  &lt;0x00000000f0cdea18&gt; (a java.util.concurrent.CountDownLatch$Sync)</div><div class="line">	at java.util.concurrent.locks.LockSupport.park(LockSupport.java:156)</div><div class="line">	at java.util.concurrent.locks.AbstractQueuedSynchronizer.parkAndCheckInterrupt(AbstractQueuedSynchronizer.java:811)</div><div class="line">	at java.util.concurrent.locks.AbstractQueuedSynchronizer.doAcquireSharedInterruptibly(AbstractQueuedSynchronizer.java:969)</div><div class="line">	at java.util.concurrent.locks.AbstractQueuedSynchronizer.acquireSharedInterruptibly(AbstractQueuedSynchronizer.java:1281)</div><div class="line">	at java.util.concurrent.CountDownLatch.await(CountDownLatch.java:207)</div><div class="line">	at com.alibaba.cobar.client.support.execution.DefaultConcurrentRequestProcessor.process(DefaultConcurrentRequestProcessor.java:85)</div></pre></td></tr></table></figure>
 <p>从初步分析看，2月1号的宕机和业务压力和cpu的负载有关，但是直接引起sales api线程池满的原因不是它们，而多数据源连接池的连锁效应，堆栈的分析结果都和cobar-client相关。</p>
 <h4 id="深入分析"><a href="#深入分析" class="headerlink" title="深入分析"></a>深入分析</h4><p>通过阅读源代码，总结cobar-client的多数据源的工作原理如下图。</p>
-<p><img src="http://os8wjvykw.bkt.clouddn.com/2017-08-14-094854.jpg" alt="clipboard"></p>
+<p><img src="http://pic.youdetan.com/2017-08-14-094854.jpg" alt="clipboard"></p>
 <p>CobarSqlMapClientTemplate继承了iBatis的SqlMapClientTemplate，在内部创建了一个线程池并行执行多个数据源的查询等操作。从线程堆栈看到的latch.await()就是在等待每个线程的事务结束，这里会存在一个问题，如果某个事务是耗时很长的，那整个操作流程都会被这个事务拖长，而且在这个操作得到结束之前，操作涉及到的数据源的连接都不会释放，这也是为什么maindb和itemdb都被占满的原因。</p>
 <p>在监控到的接口日志中，我们的确有很多的查询是耗时很长的，像findGoodsByCondition这个接口，平均都是耗时四秒，一旦高峰期，很多dubbo的查询线程会被挂住。</p>
 <p>不过我们数据库连接池很大，每个应用都配置了100个，难道我们的业务量真的达到那么高，并发几百个？从前端nginx的访问记录来看，排除了这种可能性。</p>
@@ -220,7 +220,7 @@
 <li>对于开源框架的使用，一定要知其然而且知其所以然，不能仅局限于会使用框架，阅读开源的代码是必不可少的，了解代码就会更好的了解他的工作原理，更好的利用开源。此次代码修改已经PR到开源库中，已经被合入了。</li>
 </ul>
 <h4 id="版权说明"><a href="#版权说明" class="headerlink" title="版权说明"></a>版权说明</h4><p>本文采用 CC BY 3.0 CN协议 进行许可。 可自由转载、引用，但需署名作者且注明文章出处。如转载至微信公众号，请在文末添加作者公众号二维码。</p>
-<h4 id="关注我"><a href="#关注我" class="headerlink" title="关注我"></a>关注我</h4><p>微信公众号<br><img src="http://pic.ohant.com/2017-08-17-021331.jpg" alt="qrcode_for_8寸"></p>
+<h4 id="关注我"><a href="#关注我" class="headerlink" title="关注我"></a>关注我</h4><p>微信公众号<br><img src="http://pic.youdetan.com/2017-08-17-021331.jpg" alt="qrcode_for_8寸"></p>
 
       
 
