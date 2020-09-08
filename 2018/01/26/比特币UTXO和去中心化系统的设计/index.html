@@ -14,15 +14,15 @@
 <meta property="og:url" content="joecao.github.io/2018/01/26/比特币UTXO和去中心化系统的设计/index.html">
 <meta property="og:site_name" content="曹祖鹏的Blog">
 <meta property="og:description" content="2018-01-26 曹祖鹏 起因刚进2018年，区块链突然大热，程序员们可能莫名其妙，不就是一个分布式系统么，怎么突然就要改变互联网了？还是按照我们熟悉的分布式系统设计分析开始，我们了解一些区块链的基础知识，看看是否可以改变世界。 UTXO是什么UTXO是Unspent Transaction Output（未消费交易输出）简写。这绝对是比特币的非常特殊的地方，理解UTXO也就理解了比特币去中心">
-<meta property="og:image" content="http://pic.youdetan.com/2018-01-26-112822.jpg">
-<meta property="og:image" content="http://pic.youdetan.com/2018-01-26-112819.jpg">
-<meta property="og:image" content="http://pic.youdetan.com/2018-01-26-112821.jpg">
+<meta property="og:image" content="http://pic.newtech.club/2018-01-26-112822.jpg">
+<meta property="og:image" content="http://pic.newtech.club/2018-01-26-112819.jpg">
+<meta property="og:image" content="http://pic.newtech.club/2018-01-26-112821.jpg">
 <meta property="og:image" content="https://user-images.githubusercontent.com/3287183/27618913-8ebf4766-5bf1-11e7-95ce-56055ad9effe.jpg">
-<meta property="og:updated_time" content="2019-05-23T07:38:25.000Z">
+<meta property="og:updated_time" content="2020-09-08T03:07:24.924Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="比特币UTXO和去中心化系统的设计">
 <meta name="twitter:description" content="2018-01-26 曹祖鹏 起因刚进2018年，区块链突然大热，程序员们可能莫名其妙，不就是一个分布式系统么，怎么突然就要改变互联网了？还是按照我们熟悉的分布式系统设计分析开始，我们了解一些区块链的基础知识，看看是否可以改变世界。 UTXO是什么UTXO是Unspent Transaction Output（未消费交易输出）简写。这绝对是比特币的非常特殊的地方，理解UTXO也就理解了比特币去中心">
-<meta name="twitter:image" content="http://pic.youdetan.com/2018-01-26-112822.jpg">
+<meta name="twitter:image" content="http://pic.newtech.club/2018-01-26-112822.jpg">
   
     <link rel="alternative" href="/atom.xml" title="曹祖鹏的Blog" type="application/atom+xml">
   
@@ -184,11 +184,11 @@
 <h2 id="UTXO是什么"><a href="#UTXO是什么" class="headerlink" title="UTXO是什么"></a>UTXO是什么</h2><p>UTXO是Unspent Transaction Output（未消费交易输出）简写。这绝对是比特币的非常特殊的地方，理解UTXO也就理解了比特币去中心化的含义。</p>
 <p>说起UTXO必须先要介绍交易模型。以我们平时对交易的理解，我给张三转账了一笔100块钱，那就是我的账上的钱少了100，张三账上的钱多了100。我们再把问题稍微复杂一些，我和张三合起来买一个李四的一个商品390块钱。我的账户支付100，张三账户支付300，李四的帐户获得390，支付宝账户获得了10块钱的转账手续费。那么对这比交易的记录应该是这样的：</p>
 <a id="more"></a>   
-<p><img src="http://pic.youdetan.com/2018-01-26-112822.jpg" alt="帐户模型"></p>
+<p><img src="http://pic.newtech.club/2018-01-26-112822.jpg" alt="帐户模型"></p>
 <p>这种记账方式常用在财务记账上。不过作为一个去中心化的系统，是没有一个中心化银行管理你的开户、销户、余额的。没有余额，怎么判断你的账上有100块钱？</p>
-<p><img src="http://pic.youdetan.com/2018-01-26-112819.jpg" alt="如何确认"></p>
+<p><img src="http://pic.newtech.club/2018-01-26-112819.jpg" alt="如何确认"></p>
 <p>如上图的一个例子，在最后一笔交易中，用户C必须将前面几次交易的比特币输出作为下一个关联交易的输入，具体见下图的no 321笔交易，用户C将前面获得的两次输出，作为输入放在了交易中，然后给自己输出1个比特币的找零（如果不给自己输出找零，那么这个差额就被矿工当成小费了，切记切记）。比特币的程序会判定，如果两个UTXO加在一起不够支付，则交易不成功。</p>
-<p><img src="http://pic.youdetan.com/2018-01-26-112821.jpg" alt="区块链基础.001"></p>
+<p><img src="http://pic.newtech.club/2018-01-26-112821.jpg" alt="区块链基础.001"></p>
 <p>比特币UTXO使用有点像古代的银锭</p>
 <ul>
 <li>五两的银锭付给别人二两，需要通过夹剪将一整块银锭剪成两块，二两的给别人，三两的留给自己。对比：比特币在输出中重新创建一个新的UTXO作为给自己的找零</li>
@@ -334,7 +334,7 @@
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2019 Joe Cao
+    		&copy; 2020 Joe Cao
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
