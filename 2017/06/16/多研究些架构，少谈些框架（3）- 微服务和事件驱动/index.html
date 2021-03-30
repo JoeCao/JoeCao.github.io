@@ -14,20 +14,20 @@
 <meta property="og:url" content="joecao.github.io/2017/06/16/多研究些架构，少谈些框架（3）- 微服务和事件驱动/index.html">
 <meta property="og:site_name" content="曹祖鹏的Blog">
 <meta property="og:description" content="2017-6-16 曹祖鹏 接上篇，我们采用了领域驱动的开发方式，使用了充血模型，享受了他的好处，但是也不得不面对他带来的弊端。这个弊端在分布式的微服务架构下面又被放大。 事务一致性事务一致性的问题在Monolithic下面不是大问题，在微服务下面却是很致命，我们回顾一下所谓的ACID原则  Atomicity - 原子性，改变数据状态要么是一起完成，要么一起失败 Consistency - 一致">
-<meta property="og:image" content="http://pic.youdetan.com/2017-07-26-1.png">
-<meta property="og:image" content="http://pic.youdetan.com/2017-07-26-2-placeorder.png">
-<meta property="og:image" content="http://pic.youdetan.com/2017-07-26-3-InvetoryLock.png">
+<meta property="og:image" content="http://pic.newtech.club/2017-07-26-1.png">
+<meta property="og:image" content="http://pic.newtech.club/2017-07-26-2-placeorder.png">
+<meta property="og:image" content="http://pic.newtech.club/2017-07-26-3-InvetoryLock.png">
 <meta property="og:image" content="https://user-images.githubusercontent.com/3287183/27272687-215f28de-54fe-11e7-930a-942db2f72883.png">
-<meta property="og:image" content="http://pic.youdetan.com/2017-07-26-4-materializedview.png">
-<meta property="og:image" content="http://pic.youdetan.com/2017-07-26-5-MessageDriven.jpg">
-<meta property="og:image" content="http://pic.youdetan.com/2017-07-26-6-localtranscation.png">
-<meta property="og:image" content="http://pic.youdetan.com/2017-07-26-8-improved.png">
+<meta property="og:image" content="http://pic.newtech.club/2017-07-26-4-materializedview.png">
+<meta property="og:image" content="http://pic.newtech.club/2017-07-26-5-MessageDriven.jpg">
+<meta property="og:image" content="http://pic.newtech.club/2017-07-26-6-localtranscation.png">
+<meta property="og:image" content="http://pic.newtech.club/2017-07-26-8-improved.png">
 <meta property="og:image" content="https://user-images.githubusercontent.com/3287183/27618913-8ebf4766-5bf1-11e7-95ce-56055ad9effe.jpg">
-<meta property="og:updated_time" content="2019-05-23T07:57:44.000Z">
+<meta property="og:updated_time" content="2021-03-30T08:53:16.864Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="多研究些架构，少谈些框架（3）-- 微服务和事件驱动">
 <meta name="twitter:description" content="2017-6-16 曹祖鹏 接上篇，我们采用了领域驱动的开发方式，使用了充血模型，享受了他的好处，但是也不得不面对他带来的弊端。这个弊端在分布式的微服务架构下面又被放大。 事务一致性事务一致性的问题在Monolithic下面不是大问题，在微服务下面却是很致命，我们回顾一下所谓的ACID原则  Atomicity - 原子性，改变数据状态要么是一起完成，要么一起失败 Consistency - 一致">
-<meta name="twitter:image" content="http://pic.youdetan.com/2017-07-26-1.png">
+<meta name="twitter:image" content="http://pic.newtech.club/2017-07-26-1.png">
   
     <link rel="alternative" href="/atom.xml" title="曹祖鹏的Blog" type="application/atom+xml">
   
@@ -196,13 +196,13 @@
 <a id="more"></a>
 <p>在单体服务和关系型数据库的时候，我们很容易通过数据库的特性去完成ACID。但是一旦你按照DDD拆分聚合根-微服务架构，他们的数据库就已经分离开了，你就要独立面对分布式事务，要在自己的代码里面满足ACID。<br>对于分布式事务，大家一般会想到以前的JTA标准，2PC两段式提交。我记得当年在Dubbo群里面，基本每周都会有人询问Dubbo啥时候支撑分布式事务。实际上根据分布式系统中CAP原则，当P(分区容忍)发生的时候，强行追求C（一致性），会导致（A）可用性、吞吐量下降，此时我们一般用最终一致性来保证我们系统的AP能力。当然不是说放弃C，而是在一般情况下CAP都能保证，在发生分区的情况下，我们可以通过最终一致性来保证数据一致。</p>
 <p>例：<br>在电商业务的下订单冻结库存场景。需要根据库存情况确定订单是否成交。<br>假设你已经采用了分布式系统，这里订单模块和库存模块是两个服务，分别拥有自己的存储（关系型数据库），</p>
-<p><img src="http://pic.youdetan.com/2017-07-26-1.png" alt="DIFF"></p>
+<p><img src="http://pic.newtech.club/2017-07-26-1.png" alt="DIFF"></p>
 <p>在一个数据库的时候，一个事务就能搞定两张表的修改，但是微服务中，就没法这么做了。<br>在DDD理念中，一次事务只能改变一个聚合内部的状态，如果多个聚合之间需要状态一致，那么就要通过最终一致性。订单和库存明显是分属于两个不同的限界上下文的聚合，这里需要实现最终一致性，就需要使用事件驱动的架构。</p>
 <h4 id="事件驱动实现最终一致性"><a href="#事件驱动实现最终一致性" class="headerlink" title="事件驱动实现最终一致性"></a>事件驱动实现最终一致性</h4><p>事件驱动架构在领域对象之间通过异步的消息来同步状态，有些消息也可以同时发布给多个服务，在消息引起了一个服务的同步后可能会引起另外消息，事件会扩散开。严格意义上的事件驱动是没有同步调用的。</p>
 <p>例子：<br>在订单服务新增订单后，订单的状态是“已开启”，然后发布一个Order Created事件到消息队列上</p>
-<p><img src="http://pic.youdetan.com/2017-07-26-2-placeorder.png" alt="2-placeorder"></p>
+<p><img src="http://pic.newtech.club/2017-07-26-2-placeorder.png" alt="2-placeorder"></p>
 <p>库存服务在接收到Order Created 事件后，将库存表格中的某sku减掉可销售库存，增加订单占用库存，然后再发送一个Inventory Locked事件给消息队列</p>
-<p><img src="http://pic.youdetan.com/2017-07-26-3-InvetoryLock.png" alt="3-InvetoryLock"></p>
+<p><img src="http://pic.newtech.club/2017-07-26-3-InvetoryLock.png" alt="3-InvetoryLock"></p>
 <p>订单服务接收到Inventory Locked事件，将订单的状态改为“已确认”</p>
 <p><img src="https://user-images.githubusercontent.com/3287183/27272687-215f28de-54fe-11e7-930a-942db2f72883.png" alt="OrderChange"></p>
 <p>有人问，如果库存不足，锁定不成功怎么办？  简单，库存服务发送一个Lock Fail事件， 订单服务接收后，把订单置为“已取消”。</p>
@@ -216,7 +216,7 @@
 </li>
 </ul>
 <ul>
-<li><p>我们的查询任务往往很复杂，比如查询商品列表，要求按照上个月的销售额进行排序； 要按照商品的退货率排序等等。但是在微服务和DDD之后，我们的存储模型已经被拆离开，上述的查询都是要涉及订单、用户、商品多个领域的数据。如何搞？  此时我们要引入一个视图的概念。比如下面的，查询用户名下订单的操作，直接调用两个服务自己在内存中join效率无疑是很低的，再加上一些filter条件、分页，没法做了。于是我们将事件广播出去，由一个单独的视图服务来接收这些事件，并形成一个物化视图（materialized view），这些数据已经join过，处理过，放在一个单独的查询库中，等待查询，这是一个典型的以空间换时间的处理方式。<br><img src="http://pic.youdetan.com/2017-07-26-4-materializedview.png" alt="4-materializedview"></p>
+<li><p>我们的查询任务往往很复杂，比如查询商品列表，要求按照上个月的销售额进行排序； 要按照商品的退货率排序等等。但是在微服务和DDD之后，我们的存储模型已经被拆离开，上述的查询都是要涉及订单、用户、商品多个领域的数据。如何搞？  此时我们要引入一个视图的概念。比如下面的，查询用户名下订单的操作，直接调用两个服务自己在内存中join效率无疑是很低的，再加上一些filter条件、分页，没法做了。于是我们将事件广播出去，由一个单独的视图服务来接收这些事件，并形成一个物化视图（materialized view），这些数据已经join过，处理过，放在一个单独的查询库中，等待查询，这是一个典型的以空间换时间的处理方式。<br><img src="http://pic.newtech.club/2017-07-26-4-materializedview.png" alt="4-materializedview"></p>
 </li>
 <li><p>经过分析，除了简单的根据主键Find或者没有太多关联的List查询，我们大部分的查询任务可以放到单独的查询库中，这个查询库可以是关系数据库的ReadOnly库，也可以是NoSQL的数据库，实际上我们在项目中使用了ElasticSearch作为专门的查询视图，效果很不错</p>
 </li>
@@ -227,7 +227,7 @@
 <li>并发量必然很大</li>
 <li>服务之间的耦合严重，一旦宕机、升级影响的范围很大。<br>特别是最后一条，严重限制了我们获得微服务提供的优势“松耦合、每个服务自己可以频繁升级不影响其他模块”。这就需要我们通过事件驱动方法，适当冗余一些数据到不同的BC去，把这种耦合拆解开。这种耦合有时候是通过Value Object嵌入到实体中的方式，在生成实体的时候就冗余，比如订单在生成的时候就冗余了商品的信息；有时候是通过额外的Value Object列表方式，营销中心冗余一部分相关的商品列表数据，并随时关注监听商品的上下级状态，同步替换掉本限界上下文的商品列表。</li>
 </ul>
-<p>下图一个下单场景分析，在电商系统中，我们可以认为会员和商品是所有业务的基础数据，他们的变更应该是通过广播的方式发布到各个领域，每个领域保留自己需要的信息。<br><img src="http://pic.youdetan.com/2017-07-26-5-MessageDriven.jpg" alt="5-MessageDriven"></p>
+<p>下图一个下单场景分析，在电商系统中，我们可以认为会员和商品是所有业务的基础数据，他们的变更应该是通过广播的方式发布到各个领域，每个领域保留自己需要的信息。<br><img src="http://pic.newtech.club/2017-07-26-5-MessageDriven.jpg" alt="5-MessageDriven"></p>
 <h4 id="保证最终一致性"><a href="#保证最终一致性" class="headerlink" title="保证最终一致性"></a>保证最终一致性</h4><p>最终一致性成功依赖很多条件</p>
 <ul>
 <li>依赖消息传递的可靠性，可能A系统变更了状态，消息发到B系统的时候丢失了，导致AB的状态不一致</li>
@@ -236,10 +236,10 @@
 <li>然后将Order Created事件插入一张专门Event表，事务提交；</li>
 <li>有一个单独的定时任务线程，定期扫描Event表，扫出来需要发送的就丢到MQ，同时把Event设置为“已发送”。</li>
 </ul>
-<p><img src="http://pic.youdetan.com/2017-07-26-6-localtranscation.png" alt="6-localtranscation"></p>
+<p><img src="http://pic.newtech.club/2017-07-26-6-localtranscation.png" alt="6-localtranscation"></p>
 <p>方案的优势是使用了本地数据库的事务，如果Event没有插入成功，那么订单也不会被创建；线程扫描后把event置为已发送，也确保了消息不会被漏发（我们的目标是宁可重发，也不要漏发，因为Event处理会被设计为幂等）。<br>缺点是需要单独处理Event发布在业务逻辑中，繁琐容易忘记；Event发送有些滞后；定时扫描性能消耗大，而且会产生数据库高水位隐患；</p>
 <p>我们稍作改进，使用数据库特有的MySQL Binlog跟踪（阿里的Canal）或者Oracle的GoldenGate技术可以获得数据库的Event表的变更通知，这样就可以避免通过定时任务来扫描了</p>
-<p>   <img src="http://pic.youdetan.com/2017-07-26-8-improved.png" alt="8-improved"></p>
+<p>   <img src="http://pic.newtech.club/2017-07-26-8-improved.png" alt="8-improved"></p>
 <p>不过用了这些数据库日志的工具，会和具体的数据库实现（甚至是特定的版本）绑定，决策的时候请慎重。</p>
 <h5 id="使用Event-Sourcing-事件溯源"><a href="#使用Event-Sourcing-事件溯源" class="headerlink" title="使用Event Sourcing 事件溯源"></a>使用Event Sourcing 事件溯源</h5><p>事件溯源对我们来说是一个特别的思路，他并不持久化Entity对象，而是只把初始状态和每次变更的Event记录下来，并在内存中根据Event还原Entity对象的最新状态，具体实现很类似数据库的Redolog的实现，只是他把这种机制放到了应用层来。<br>虽然事件溯源有很多宣称的优势，引入这种技术要特别小心，首先他不一定适合大部分的业务场景，一旦变更很多的情况下，效率的确是个大问题；另外一些查询的问题也是困扰。<br>我们仅仅在个别的业务上探索性的使用Event Souring和AxonFramework，由于实现起来比较复杂，具体的情况还需要等到实践一段时间后再来总结，也许需要额外的一篇文章来详细描述</p>
 <p>以上是对事件驱动在微服务架构中一些我的理解，文章部分借鉴了Chris Richardson的Blog，<a href="https://www.nginx.com/blog/event-driven-data-management-microservices/" target="_blank" rel="external">https://www.nginx.com/blog/event-driven-data-management-microservices/</a> 在此我向他表示致谢 。</p>
@@ -263,7 +263,7 @@
                     
                     
                     <div class="reward-box-item">
-                      <img class="reward-img" src="http://pic.ohant.com/2018-02-11-093907.jpg">
+                      <img class="reward-img" src="http://pic.newtech.club/2018-02-11-093907.jpg">
                       <span class="reward-type">微信</span>
                     </div>
                     
@@ -382,7 +382,7 @@
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2020 Joe Cao
+    		&copy; 2021 Joe Cao
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
